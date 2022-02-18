@@ -1,4 +1,4 @@
-package cn.zzq0324.alarm.bot.controller;
+package cn.zzq0324.alarm.bot.controller.backend;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

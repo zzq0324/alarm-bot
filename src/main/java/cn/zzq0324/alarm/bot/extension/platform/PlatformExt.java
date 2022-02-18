@@ -15,6 +15,11 @@ import java.util.List;
 public interface PlatformExt {
 
     /**
+     * 解析消息
+     */
+    Message parseMessage();
+
+    /**
      * 创建群聊，返回群聊ID
      */
     String createChatGroup(String name, String description);
