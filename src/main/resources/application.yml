@@ -1,4 +1,4 @@
-# web server config
+# HTTP监听端口
 server:
   port: 8888
 

@@ -1,4 +1,4 @@
-package cn.zzq0324.alarm.bot;
+package cn.zzq0324.alarm.bot.config;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusPropertiesCustomizer;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
