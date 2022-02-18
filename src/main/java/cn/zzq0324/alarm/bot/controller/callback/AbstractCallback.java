@@ -75,10 +75,12 @@ public abstract class AbstractCallback {
         // 找到直接创建群聊，拉人并发送消息
         String chatGroupId = ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup("", "");
 
+        // 查询对应的人
+
         // 拉人进群
         ExtensionLoader.getDefaultExtension(PlatformExt.class).addMemberToChatGroup(chatGroupId, null);
 
-        // 查询对应的人
+        // 推送故障或问题
 
         // 插入数据库记录
 
