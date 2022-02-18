@@ -3,7 +3,6 @@ package cn.zzq0324.alarm.bot.controller.callback;
 import cn.zzq0324.alarm.bot.constant.CallbackType;
 import cn.zzq0324.alarm.bot.constant.LarkConstants;
 import cn.zzq0324.alarm.bot.constant.LarkEvent;
-import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
@@ -104,11 +103,6 @@ public class LarkCallbackController extends AbstractCallback {
         }
 
         return callbackData;
-    }
-
-    @Override
-    public Message parseMessage(CallbackData callbackData) {
-        return null;
     }
 
     @Override

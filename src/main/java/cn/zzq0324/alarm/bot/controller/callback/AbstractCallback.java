@@ -7,11 +7,14 @@ import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import cn.zzq0324.alarm.bot.vo.CallbackRequest;
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,10 +24,12 @@ import java.util.regex.Pattern;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
+@Slf4j
 public abstract class AbstractCallback {
 
     @Autowired
     protected AlarmBotProperties alarmBotProperties;
+
     private Pattern pattern = null;
 
     @RequestMapping(value = "/callback")
@@ -50,7 +55,14 @@ public abstract class AbstractCallback {
         }
 
         // 解析消息，机器人只支持文本消息，暂时不考虑富文本
-        Message message = parseMessage(callbackData);
+        List<Message> messageList = ExtensionLoader.getDefaultExtension(PlatformExt.class).parseMessage(callbackData);
+        if (StringUtils.isEmpty(messageList)) {
+            log.warn("empty message, callbackData: {}", JSONObject.toJSONString(callbackData));
+
+            return formatResponse(callbackData);
+        }
+
+        Message message = messageList.get(0);
 
         // 根据正则表达式查找serviceId
         String serviceId = extractServiceId(message.getContent());
@@ -61,7 +73,10 @@ public abstract class AbstractCallback {
         }
 
         // 找到直接创建群聊，拉人并发送消息
-        ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup("", "");
+        String chatGroupId = ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup("", "");
+
+        // 拉人进群
+        ExtensionLoader.getDefaultExtension(PlatformExt.class).addMemberToChatGroup(chatGroupId, null);
 
         // 查询对应的人
 
@@ -111,11 +126,6 @@ public abstract class AbstractCallback {
      * @param data 加密数据
      */
     public abstract CallbackData unmarshal(String data);
-
-    /**
-     * 解析消息
-     */
-    public abstract Message parseMessage(CallbackData callbackData);
 
     /**
      * 拼接url校验的响应信息

@@ -22,11 +22,11 @@ public class DingTalk implements PlatformExt {
 
     @Override
     public void send(String receiveId, String messageType, String content) {
-       
+
     }
 
     @Override
-    public Message parseMessage(CallbackData callbackData) {
+    public List<Message> parseMessage(CallbackData callbackData) {
         return null;
     }
 

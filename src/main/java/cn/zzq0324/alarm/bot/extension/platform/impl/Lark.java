@@ -1,6 +1,5 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl;
 
-import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -9,20 +8,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
 import com.larksuite.oapi.core.api.ReqCaller;
 import com.larksuite.oapi.core.api.response.Response;
-import com.larksuite.oapi.core.utils.Jsons;
 import com.larksuite.oapi.service.im.v1.ImService;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateResult;
 import com.larksuite.oapi.service.im.v1.model.ChatMembersCreateReqBody;
-import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.MessageCreateReqBody;
-import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import com.larksuite.oapi.service.im.v1.model.MessageReplyReqBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,20 +55,8 @@ public class Lark implements PlatformExt {
     }
 
     @Override
-    public Message parseMessage(CallbackData callbackData) {
-        MessageReceiveEventData eventData =
-            Jsons.DEFAULT_GSON.fromJson(JSONObject.toJSONString(callbackData), MessageReceiveEventData.class);
-
-        EventMessage eventMessage = eventData.getMessage();
-
-        Message message = new Message();
-        message.setThirdMessageId(eventMessage.getMessageId());
-        message.setMessageType(MessageType.TEXT);
-        message.setContent(eventMessage.getContent());
-        message.setSendTime(new Date(eventMessage.getCreateTime()));
-        message.setChatGroupId(eventMessage.getChatId());
-
-        return message;
+    public List<Message> parseMessage(CallbackData callbackData) {
+        return null;
     }
 
     @Override
