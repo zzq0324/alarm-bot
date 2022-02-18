@@ -28,7 +28,7 @@ public class Message {
     /**
      * 消息类型
      */
-    private MessageType type;
+    private MessageType messageType;
 
     /**
      * 三方消息ID

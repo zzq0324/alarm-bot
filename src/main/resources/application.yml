@@ -32,3 +32,7 @@ lark:
   app-secret: KmGWVPrHZT4fqtHiHRLmreps7mym6X0e
   verify-token: EwqCX3PI73oETHorzP5B4czbzTTx28ZY
   encrypt-key: Z4ic2Gi3iFDVvurIzakLnRUpKGExHyLX
+
+alarm-bot:
+  # serviceId对应的正则表达式
+  service-id-reg-exp:

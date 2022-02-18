@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.controller.callback;
 
 import cn.zzq0324.alarm.bot.constant.CallbackType;
 import cn.zzq0324.alarm.bot.constant.LarkConstants;
+import cn.zzq0324.alarm.bot.constant.LarkEvent;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import com.alibaba.fastjson.JSONObject;
@@ -32,6 +33,9 @@ public class LarkCallbackController extends AbstractCallback {
     @Autowired
     private Config config;
 
+    /**
+     * 消息卡片互动
+     */
     @RequestMapping(value = "/interactiveCallback")
     public Object interactiveCallback(@RequestBody JSONObject requestBody) {
         // URL校验，判断token
@@ -49,6 +53,11 @@ public class LarkCallbackController extends AbstractCallback {
         Card card = Jsons.DEFAULT_GSON.fromJson(requestBody.toJSONString(), Card.class);
 
         return null;
+    }
+
+    @Override
+    public boolean isAtRobotEvent(String eventType) {
+        return LarkEvent.AT_ROBOT_MESSAGE.getEventType().equals(eventType);
     }
 
     @Override
@@ -103,8 +112,13 @@ public class LarkCallbackController extends AbstractCallback {
     }
 
     @Override
-    public Object formatUrlValidationResponse(CallbackData callbackData) {
-        return formatChallengeJson(callbackData.getNonce());
+    public Object formatResponse(CallbackData callbackData) {
+        if (callbackData.getCallbackType() == CallbackType.URL_VALIDATION) {
+            return formatChallengeJson(callbackData.getNonce());
+        }
+
+        // 飞书官方只认HTTP Status，只要等于200就认为回调成功
+        return null;
     }
 
     private JSONObject formatChallengeJson(String challenge) {

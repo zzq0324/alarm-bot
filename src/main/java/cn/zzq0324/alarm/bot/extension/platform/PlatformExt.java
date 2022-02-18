@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.extension.platform;
 
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.spi.SPI;
+import cn.zzq0324.alarm.bot.vo.CallbackData;
 
 import java.util.List;
 
@@ -15,9 +16,19 @@ import java.util.List;
 public interface PlatformExt {
 
     /**
+     * 回复信息
+     */
+    void reply(String messageId, String title, String text);
+
+    /**
+     * 发送信息
+     */
+    void send(String receiveId, String title, String text);
+
+    /**
      * 解析消息
      */
-    Message parseMessage();
+    Message parseMessage(CallbackData callbackData);
 
     /**
      * 创建群聊，返回群聊ID

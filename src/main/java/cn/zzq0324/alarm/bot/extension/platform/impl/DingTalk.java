@@ -1,8 +1,9 @@
-package cn.zzq0324.alarm.bot.extension.platform.impl.dingtalk;
+package cn.zzq0324.alarm.bot.extension.platform.impl;
 
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
+import cn.zzq0324.alarm.bot.vo.CallbackData;
 
 import java.util.List;
 
@@ -12,8 +13,23 @@ import java.util.List;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
-@Extension(name = "dingtalk",summary = "钉钉")
+@Extension(name = "dingtalk", summary = "钉钉")
 public class DingTalk implements PlatformExt {
+    @Override
+    public void reply(String messageId, String title, String text) {
+
+    }
+
+    @Override
+    public void send(String receiveId, String messageType, String content) {
+       
+    }
+
+    @Override
+    public Message parseMessage(CallbackData callbackData) {
+        return null;
+    }
+
     @Override
     public String createChatGroup(String name, String description) {
         return null;
