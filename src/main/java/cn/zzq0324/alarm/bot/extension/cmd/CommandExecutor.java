@@ -38,7 +38,6 @@ public class CommandExecutor {
 
     public void execute(Message message) {
         List<Command> commandList = ExtensionLoader.getExtensionLoader(Command.class).getExtensionList();
-
         CommandContext context = null;
 
         for (Command command : commandList) {

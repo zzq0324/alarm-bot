@@ -4,6 +4,7 @@ import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
+import cn.zzq0324.alarm.bot.util.FileUtils;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
@@ -110,9 +111,11 @@ public class Lark implements PlatformExt {
 
     @Override
     public void help(Message message) {
-        JSONObject content = new JSONObject();
-        content.put("text", "郑欣瑶真漂亮！");
-        send(message.getChatGroupId(), "text", content.toJSONString());
+        // 获取帮助模板
+        String content = FileUtils.readResourceAsString("/lark/help.json");
+
+        // 响应式卡片
+        send(message.getChatGroupId(), "interactive", content);
     }
 
     private <T> T executeCaller(ReqCaller<?, T> caller) {

@@ -56,16 +56,6 @@ public class CreateEvent implements Command<CreateEventContext> {
 
     @Override
     public void execute(CreateEventContext context) {
-        Message message = context.getMessage();
-        // 根据正则表达式查找project
-        String projectName = extractProjectName(message.getContent());
-        Project project = StringUtils.isEmpty(projectName) ? null : projectService.getByName(projectName);
-
-        // 创建事件
-        handleCreateEvent(project, message);
-    }
-
-    private void handleCreateEvent(Project project, Message message) {
         // 根据项目名称查找对应的成员
 
         // 找到直接创建群聊，拉人并发送消息
