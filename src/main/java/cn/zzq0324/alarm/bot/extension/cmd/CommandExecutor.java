@@ -72,10 +72,10 @@ public class CommandExecutor {
      * 从消息体中解析出serviceId
      */
     private String extractProjectName(String messageContent) {
-        if (pattern == null) {
-            pattern = Pattern.compile(alarmBotProperties.getProjectNameRegExp());
+        if (StringUtils.isEmpty(messageContent)) {
+            return null;
         }
-
+        
         Matcher matcher = pattern.matcher(messageContent);
         if (matcher.find()) {
             return matcher.group(0).trim();

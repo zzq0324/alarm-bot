@@ -3,6 +3,7 @@ package cn.zzq0324.alarm.bot.spi;
 import cn.zzq0324.alarm.bot.spring.SpringContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,11 +40,13 @@ public class ExtensionLoader<T> {
         beanMap.entrySet().stream().forEach(entry -> {
             T extensionInstance = entry.getValue();
 
+            Class<?> targetClass = AopUtils.getTargetClass(extensionInstance);
+
             // 未注解@Extension将忽略，不作为扩展实现节点使用
-            if (!extensionInstance.getClass().isAnnotationPresent(Extension.class)) {
-                logger.warn("{} not annotated with @Extension.", extensionInstance.getClass());
+            if (!targetClass.isAnnotationPresent(Extension.class)) {
+                throw new RuntimeException(targetClass.getName() + " not annotated with @Extension.");
             } else {
-                Extension extension = extensionInstance.getClass().getAnnotation(Extension.class);
+                Extension extension = targetClass.getAnnotation(Extension.class);
 
                 checkDuplicateDefaultExt(extension, extensionInstance);
 

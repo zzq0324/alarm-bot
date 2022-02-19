@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl;
 
+import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -8,16 +9,21 @@ import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
 import com.larksuite.oapi.core.api.ReqCaller;
 import com.larksuite.oapi.core.api.response.Response;
+import com.larksuite.oapi.core.utils.Jsons;
 import com.larksuite.oapi.service.im.v1.ImService;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateResult;
 import com.larksuite.oapi.service.im.v1.model.ChatMembersCreateReqBody;
+import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.MessageCreateReqBody;
+import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import com.larksuite.oapi.service.im.v1.model.MessageReplyReqBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +38,10 @@ public class Lark implements PlatformExt {
 
     @Autowired
     private Config config;
+
+    public void test() {
+        System.out.println("lark test...");
+    }
 
     @Override
     public void reply(String messageId, String title, String text) {
@@ -51,12 +61,26 @@ public class Lark implements PlatformExt {
         reqBody.setContent(content);
         reqBody.setReceiveId(receiveId);
 
-        executeCaller(imService.getMessages().create(reqBody));
+        log.info("data: {}", JSONObject.toJSONString(reqBody));
+
+        executeCaller(imService.getMessages().create(reqBody).setReceiveIdType("chat_id"));
     }
 
     @Override
     public List<Message> parseMessage(CallbackData callbackData) {
-        return null;
+        MessageReceiveEventData eventData =
+            Jsons.DEFAULT_GSON.fromJson(callbackData.getData().toJSONString(), MessageReceiveEventData.class);
+
+        EventMessage eventMessage = eventData.getMessage();
+
+        Message message = new Message();
+        message.setThirdMessageId(eventMessage.getMessageId());
+        message.setMessageType(MessageType.TEXT);
+        message.setContent(eventMessage.getContent());
+        message.setSendTime(new Date(eventMessage.getCreateTime()));
+        message.setChatGroupId(eventMessage.getChatId());
+
+        return Arrays.asList(message);
     }
 
     @Override
@@ -92,8 +116,8 @@ public class Lark implements PlatformExt {
     @Override
     public void help(Message message) {
         JSONObject content = new JSONObject();
-        content.put("content", "这个是帮助指令");
-        send(message.getChatGroupId(), "TEXT", content.toJSONString());
+        content.put("text", "这个是帮助指令");
+        send(message.getChatGroupId(), "text", content.toJSONString());
     }
 
     private <T> T executeCaller(ReqCaller<?, T> caller) {

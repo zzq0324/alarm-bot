@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- MAIN日志文件名 -->
+    <property name="MAIN_LOG_NAME" value="main"/>
+
+    <!-- 日志目录,可配置绝对路径和相对路径 -->
+    <property name="LOG_DIR" value="logs"/>
+    <!-- 日志后缀 -->
+    <property name="LOG_SUFFIX" value="log"/>
+
+    <!-- 默认输出格式 -->
+    <property name="DEFAULT_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%t] [%mdc{traceId:--}] %-40.40logger{39} - %m%n%ex}"/>
+    <!-- 控制台输出格式 -->
+    <property name="CONSOLE_PATTERN" value="${CONSOLE_PATTERN:-${DEFAULT_PATTERN}}"/>
+    <!-- 文件输出格式 -->
+    <property name="FILE_PATTERN" value="${DEFAULT_PATTERN}"/>
+
+    <!-- 控制台 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- main.log: 业务关键信息, 应简洁易懂，避免空间浪费-->
+    <appender name="MAIN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${MAIN_LOG_NAME}.${LOG_SUFFIX}</file>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/${MAIN_LOG_NAME}.%d{yyyy-MM-dd}.%i.${LOG_SUFFIX}</fileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="MAIN_LOG"/>
+    </root>
+</configuration>

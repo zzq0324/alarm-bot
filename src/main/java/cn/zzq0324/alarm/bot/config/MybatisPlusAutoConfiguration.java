@@ -21,7 +21,7 @@ import java.util.Date;
  * version: 1.0 <br>
  */
 @Configuration
-@MapperScan("cn.zzq0324.alarm.bot")
+@MapperScan("cn.zzq0324.alarm.bot.dao")
 public class MybatisPlusAutoConfiguration implements MetaObjectHandler {
 
     @Bean
