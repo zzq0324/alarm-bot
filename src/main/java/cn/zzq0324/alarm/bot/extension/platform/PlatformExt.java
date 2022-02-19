@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.extension.platform;
 
+import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.spi.SPI;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
@@ -54,4 +55,9 @@ public interface PlatformExt {
      * 帮助信息
      */
     void help(Message message);
+
+    /**
+     * 根据手机号查询成员三方信息
+     */
+    MemberPlatformInfo getMemberInfo(String mobile);
 }

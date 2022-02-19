@@ -5,6 +5,7 @@ import cn.zzq0324.alarm.bot.constant.CommandConstants;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.cmd.context.CommandContext;
 import cn.zzq0324.alarm.bot.extension.cmd.context.HelpContext;
+import cn.zzq0324.alarm.bot.extension.cmd.impl.Help;
 import cn.zzq0324.alarm.bot.service.ProjectService;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,11 @@ public class CommandExecutor {
         CommandContext context = null;
 
         for (Command command : commandList) {
+            // 帮助命令优先级最低
+            if (command instanceof Help) {
+                continue;
+            }
+
             context = command.matchCommand(message);
 
             // 匹配上命令，不继续匹配

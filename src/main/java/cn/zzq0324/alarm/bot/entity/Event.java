@@ -23,9 +23,14 @@ public class Event {
     private Long id;
 
     /**
+     * 项目ID
+     */
+    private Long projectId;
+
+    /**
      * 事件对应的消息id
      */
-    private String messageId;
+    private String thirdMessageId;
 
     /**
      * 聊天群组id

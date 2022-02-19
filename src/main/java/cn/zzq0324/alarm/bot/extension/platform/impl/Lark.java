@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.extension.platform.impl;
 
 import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.constant.Platform;
+import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -9,9 +10,15 @@ import cn.zzq0324.alarm.bot.util.FileUtils;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
+import com.larksuite.oapi.core.api.AccessTokenType;
+import com.larksuite.oapi.core.api.Api;
 import com.larksuite.oapi.core.api.ReqCaller;
+import com.larksuite.oapi.core.api.request.Request;
+import com.larksuite.oapi.core.api.request.RequestOptFn;
 import com.larksuite.oapi.core.api.response.Response;
 import com.larksuite.oapi.core.utils.Jsons;
+import com.larksuite.oapi.service.contact.v3.ContactService;
+import com.larksuite.oapi.service.contact.v3.model.UserGetResult;
 import com.larksuite.oapi.service.im.v1.ImService;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateResult;
@@ -23,10 +30,14 @@ import com.larksuite.oapi.service.im.v1.model.MessageReplyReqBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * description: Lark <br>
@@ -37,6 +48,8 @@ import java.util.List;
 @Extension(name = Platform.LARK, isDefault = true, summary = "飞书")
 @Slf4j
 public class Lark implements PlatformExt {
+
+    private static final RequestOptFn TIMEOUT_OPT = Request.setTimeout(1, TimeUnit.MINUTES);
 
     @Autowired
     private Config config;
@@ -119,9 +132,61 @@ public class Lark implements PlatformExt {
         send(message.getChatGroupId(), "interactive", content);
     }
 
+    @Override
+    public MemberPlatformInfo getMemberInfo(String mobile) {
+        String openId = getOpenIdByMobile(mobile);
+        if (StringUtils.isEmpty(openId)) {
+            return null;
+        }
+
+        // 查询人员信息
+        ContactService contactService = new ContactService(config);
+        ContactService.UserGetReqCall caller = contactService.getUsers().get().setUserId(openId);
+
+        UserGetResult userGetResult = executeCaller(caller);
+
+        MemberPlatformInfo memberPlatformInfo = new MemberPlatformInfo();
+        memberPlatformInfo.setOpenId(openId);
+        memberPlatformInfo.setUnionId(userGetResult.getUser().getUnionId());
+        memberPlatformInfo.setName(userGetResult.getUser().getName());
+
+        return memberPlatformInfo;
+    }
+
+    public String getOpenIdByMobile(String mobile) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("mobiles", mobile);
+
+        Request<Map, JSONObject> request =
+            Request.newRequest("user/v1/batch_get_id", "POST", AccessTokenType.Tenant, null, new JSONObject(),
+                Request.setQueryParams(params));
+
+        JSONObject response = invoke(request);
+        JSONObject mobileUsers = response.getJSONObject("mobile_users");
+
+        if (mobileUsers.containsKey(mobile)) {
+            return mobileUsers.getJSONArray(mobile).getJSONObject(0).getString("user_id");
+        }
+
+        return null;
+    }
+
     private <T> T executeCaller(ReqCaller<?, T> caller) {
         try {
             Response<T> response = caller.execute();
+            checkHttpStatus(response);
+
+            return response.getData();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <I, O> O invoke(Request<I, O> request) {
+        try {
+            request.getRequestOptFns().add(TIMEOUT_OPT);
+            Response<O> response = Api.send(config, request);
+
             checkHttpStatus(response);
 
             return response.getData();

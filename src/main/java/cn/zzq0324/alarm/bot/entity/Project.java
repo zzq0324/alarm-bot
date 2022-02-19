@@ -25,6 +25,11 @@ public class Project {
     private String name;
 
     /**
+     * 项目成员id列表
+     */
+    private String memberIds;
+
+    /**
      * 项目描述
      */
     private String description;

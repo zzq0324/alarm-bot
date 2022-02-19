@@ -1,8 +1,7 @@
 package cn.zzq0324.alarm.bot.spi;
 
 import cn.zzq0324.alarm.bot.spring.SpringContextHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 
 import java.util.ArrayList;
@@ -18,9 +17,8 @@ import java.util.concurrent.ConcurrentMap;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
+@Slf4j
 public class ExtensionLoader<T> {
-
-    private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
     // 默认spi配置前缀
     private static final String DEFAULT_SPI_PROPERTIES_PREFIX = "spi.";
@@ -33,6 +31,9 @@ public class ExtensionLoader<T> {
 
     // 默认实现节点
     private T defaultExt = null;
+
+    // 默认实现节点名称
+    private String defaultExtName = null;
 
     private ExtensionLoader(Class<T> type) {
         Map<String, T> beanMap = SpringContextHolder.getContext().getBeansOfType(type);
@@ -105,6 +106,13 @@ public class ExtensionLoader<T> {
     }
 
     /**
+     * 返回默认实现节点名称
+     */
+    public static <T> String getDefaultExtensionName(Class<T> type) {
+        return ExtensionLoader.getExtensionLoader(type).defaultExtName;
+    }
+
+    /**
      * 获取扩展节点列表
      */
     public <T> List<T> getExtensionList() {
@@ -121,6 +129,7 @@ public class ExtensionLoader<T> {
             }
 
             defaultExt = extensionInstance;
+            defaultExtName = extension.name();
         }
     }
 
@@ -130,14 +139,16 @@ public class ExtensionLoader<T> {
     private void setDefaultExtByConfig(Class<T> type) {
         // 获取默认的扩展节点名称，通过application.properties读取
         String propertyKey = DEFAULT_SPI_PROPERTIES_PREFIX + type.getTypeName();
-        String defaultExtName = SpringContextHolder.getEnvironment().getProperty(propertyKey);
+        String extName = SpringContextHolder.getEnvironment().getProperty(propertyKey);
 
-        if (defaultExtName != null) {
-            defaultExt = SpringContextHolder.getContext().getBean(defaultExtName, type);
+        if (extName != null) {
+            defaultExt = SpringContextHolder.getContext().getBean(extName, type);
 
             if (defaultExt == null) {
-                logger.warn("default extension not exists, type: {}", type.getName());
+                log.warn("default extension not exists, type: {}", type.getName());
             }
+
+            defaultExtName = defaultExt == null ? null : extName;
         }
     }
 
@@ -147,6 +158,5 @@ public class ExtensionLoader<T> {
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
         return type.isAnnotationPresent(SPI.class);
     }
-
 }
 

@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl;
 
 import cn.zzq0324.alarm.bot.constant.Platform;
+import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -50,5 +51,10 @@ public class DingTalk implements PlatformExt {
     @Override
     public void help(Message message) {
 
+    }
+
+    @Override
+    public MemberPlatformInfo getMemberInfo(String mobile) {
+        return null;
     }
 }
