@@ -16,10 +16,6 @@ import java.util.List;
 @Extension(name = "dingtalk", summary = "钉钉")
 public class DingTalk implements PlatformExt {
 
-    public void test() {
-        System.out.println("dingtalk test...");
-    }
-
     @Override
     public void reply(String messageId, String title, String text) {
 

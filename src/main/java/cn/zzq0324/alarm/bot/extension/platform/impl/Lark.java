@@ -39,10 +39,6 @@ public class Lark implements PlatformExt {
     @Autowired
     private Config config;
 
-    public void test() {
-        System.out.println("lark test...");
-    }
-
     @Override
     public void reply(String messageId, String title, String text) {
         ImService imService = new ImService(config);
@@ -61,8 +57,7 @@ public class Lark implements PlatformExt {
         reqBody.setContent(content);
         reqBody.setReceiveId(receiveId);
 
-        log.info("data: {}", JSONObject.toJSONString(reqBody));
-
+        // receiveIdType为chat_id代表群组id
         executeCaller(imService.getMessages().create(reqBody).setReceiveIdType("chat_id"));
     }
 
@@ -116,7 +111,7 @@ public class Lark implements PlatformExt {
     @Override
     public void help(Message message) {
         JSONObject content = new JSONObject();
-        content.put("text", "这个是帮助指令");
+        content.put("text", "郑欣瑶真漂亮！");
         send(message.getChatGroupId(), "text", content.toJSONString());
     }
 

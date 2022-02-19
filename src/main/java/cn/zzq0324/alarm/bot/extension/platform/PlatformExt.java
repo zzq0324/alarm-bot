@@ -15,8 +15,6 @@ import java.util.List;
 @SPI("platform")
 public interface PlatformExt {
 
-    void test();
-
     /**
      * 回复信息
      */

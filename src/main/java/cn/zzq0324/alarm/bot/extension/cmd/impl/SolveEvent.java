@@ -1,7 +1,9 @@
 package cn.zzq0324.alarm.bot.extension.cmd.impl;
 
 import cn.zzq0324.alarm.bot.constant.CommandConstants;
+import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.cmd.Command;
+import cn.zzq0324.alarm.bot.extension.cmd.context.CommandContext;
 import cn.zzq0324.alarm.bot.extension.cmd.context.SolveEventContext;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -17,9 +19,19 @@ import org.springframework.util.StringUtils;
 @Extension(name = CommandConstants.SOLVE_EVENT, summary = "指令-解决事件")
 public class SolveEvent implements Command<SolveEventContext> {
     @Override
+    public CommandContext matchCommand(Message message) {
+        // 解决事件
+        if (message.getContent().contains(CommandConstants.SOLVE_EVENT)) {
+            return SolveEventContext.builder().command(CommandConstants.SOLVE_EVENT).build();
+        }
+
+        return null;
+    }
+
+    @Override
     public void execute(SolveEventContext context) {
         String chatGroupId = context.getEvent().getChatGroupId();
-        
+
         // 推送感谢，告知即将解散
         ExtensionLoader.getDefaultExtension(PlatformExt.class).send(chatGroupId, "【已解决】", "感谢各位");
 

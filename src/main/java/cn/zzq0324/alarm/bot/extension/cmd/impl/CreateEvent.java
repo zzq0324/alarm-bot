@@ -5,6 +5,7 @@ import cn.zzq0324.alarm.bot.constant.CommandConstants;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.extension.cmd.Command;
+import cn.zzq0324.alarm.bot.extension.cmd.context.CommandContext;
 import cn.zzq0324.alarm.bot.extension.cmd.context.CreateEventContext;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.service.ProjectService;
@@ -39,18 +40,26 @@ public class CreateEvent implements Command<CreateEventContext> {
     }
 
     @Override
+    public CommandContext matchCommand(Message message) {
+        // 根据正则表达式查找project
+        String projectName = extractProjectName(message.getContent());
+        Project project = StringUtils.isEmpty(projectName) ? null : projectService.getByName(projectName);
+
+        // 符合新建事件，根据正则表达式能得出projectName并且数据库有配置该项目的告警监听
+        if (StringUtils.hasLength(projectName) && project != null) {
+            return CreateEventContext.builder().project(project).message(message).command(CommandConstants.CREATE_EVENT)
+                .build();
+        }
+
+        return null;
+    }
+
+    @Override
     public void execute(CreateEventContext context) {
         Message message = context.getMessage();
         // 根据正则表达式查找project
         String projectName = extractProjectName(message.getContent());
         Project project = StringUtils.isEmpty(projectName) ? null : projectService.getByName(projectName);
-
-        // 找不到项目回复消息提示配置有误
-        if (StringUtils.isEmpty(projectName) || project == null) {
-            projectNotFoundTip(message.getThirdMessageId());
-
-            return;
-        }
 
         // 创建事件
         handleCreateEvent(project, message);
@@ -70,20 +79,6 @@ public class CreateEvent implements Command<CreateEventContext> {
         // 推送故障或问题
 
         // 插入数据库记录
-    }
-
-    /**
-     * 未找到服务ID，给出对应的提示
-     */
-    private void projectNotFoundTip(String thirdMessageId) {
-        String text = "根据配置值[" + alarmBotProperties.getProjectNameRegExp() + "]无法解析出项目名称，请检查配置或内容是否正确！";
-
-        // 群聊发起，推送正则表达式错误的提示到群聊
-        if (!StringUtils.isEmpty(thirdMessageId)) {
-            ExtensionLoader.getDefaultExtension(PlatformExt.class).reply(thirdMessageId, "【温馨提醒】", text);
-        } else {
-            throw new IllegalArgumentException(text);
-        }
     }
 
     /**

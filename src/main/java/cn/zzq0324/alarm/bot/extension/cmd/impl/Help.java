@@ -1,7 +1,9 @@
 package cn.zzq0324.alarm.bot.extension.cmd.impl;
 
 import cn.zzq0324.alarm.bot.constant.CommandConstants;
+import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.cmd.Command;
+import cn.zzq0324.alarm.bot.extension.cmd.context.CommandContext;
 import cn.zzq0324.alarm.bot.extension.cmd.context.HelpContext;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -15,6 +17,16 @@ import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
  */
 @Extension(name = CommandConstants.HELP, summary = "指令-帮助")
 public class Help implements Command<HelpContext> {
+
+    @Override
+    public CommandContext matchCommand(Message message) {
+        if (message.getContent().contains(CommandConstants.HELP)) {
+            return HelpContext.builder().command(CommandConstants.HELP).message(message).build();
+        }
+
+        return null;
+    }
+
     @Override
     public void execute(HelpContext context) {
         ExtensionLoader.getDefaultExtension(PlatformExt.class).help(context.getMessage());
