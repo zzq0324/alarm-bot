@@ -1,6 +1,8 @@
 package cn.zzq0324.alarm.bot.entity;
 
 import cn.zzq0324.alarm.bot.constant.EventStatus;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -17,6 +19,7 @@ public class Event {
     /**
      * 主键，事件id
      */
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

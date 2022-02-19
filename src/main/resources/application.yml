@@ -6,7 +6,7 @@ server:
 spring:
   datasource:
     username: root
-    password: root
+    password: test!@#$1234
     url: jdbc:mysql://localhost:3306/alarm-bot?characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 

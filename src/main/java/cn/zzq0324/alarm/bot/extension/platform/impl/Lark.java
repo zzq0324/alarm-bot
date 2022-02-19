@@ -91,7 +91,9 @@ public class Lark implements PlatformExt {
 
     @Override
     public void help(Message message) {
-
+        JSONObject content = new JSONObject();
+        content.put("content", "这个是帮助指令");
+        send(message.getChatGroupId(), "TEXT", content.toJSONString());
     }
 
     private <T> T executeCaller(ReqCaller<?, T> caller) {

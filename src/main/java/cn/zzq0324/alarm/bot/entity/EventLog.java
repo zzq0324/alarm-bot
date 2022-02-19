@@ -1,5 +1,7 @@
 package cn.zzq0324.alarm.bot.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -10,4 +12,10 @@ import lombok.Data;
  */
 @Data
 public class EventLog {
+
+    /**
+     * 主键
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 }

@@ -139,7 +139,7 @@
                     <programs>
                         <program>
                             <!-- 启动类 -->
-                            <mainClass>cn.zzq0324.alarmbot.AlarmBotApplication</mainClass>
+                            <mainClass>cn.zzq0324.alarm.bot.AlarmBotApplication</mainClass>
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Xmx512m</extraArgument>
