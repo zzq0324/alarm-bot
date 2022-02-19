@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl;
 
 import cn.zzq0324.alarm.bot.constant.MessageType;
+import cn.zzq0324.alarm.bot.constant.Platform;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -33,7 +34,7 @@ import java.util.List;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
-@Extension(name = "lark", isDefault = true, summary = "飞书")
+@Extension(name = Platform.LARK, isDefault = true, summary = "飞书")
 @Slf4j
 public class Lark implements PlatformExt {
 

@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl;
 
+import cn.zzq0324.alarm.bot.constant.Platform;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
@@ -13,7 +14,7 @@ import java.util.List;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
-@Extension(name = "dingtalk", summary = "钉钉")
+@Extension(name = Platform.DING_TALK, summary = "钉钉")
 public class DingTalk implements PlatformExt {
 
     @Override
