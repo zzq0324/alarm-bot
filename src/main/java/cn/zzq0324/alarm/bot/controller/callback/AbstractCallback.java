@@ -1,22 +1,18 @@
 package cn.zzq0324.alarm.bot.controller.callback;
 
-import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.constant.CallbackType;
 import cn.zzq0324.alarm.bot.entity.Message;
+import cn.zzq0324.alarm.bot.extension.cmd.CommandExecutor;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import cn.zzq0324.alarm.bot.vo.CallbackRequest;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * description: AbstractCallback <br>
@@ -28,9 +24,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractCallback {
 
     @Autowired
-    protected AlarmBotProperties alarmBotProperties;
-
-    private Pattern pattern = null;
+    private CommandExecutor commandExecutor;
 
     @RequestMapping(value = "/callback")
     public Object callback(@RequestBody CallbackRequest request) {
@@ -41,80 +35,28 @@ public abstract class AbstractCallback {
             return formatResponse(callbackData);
         }
 
-        // 进行逻辑处理
-        return handleCallback(callbackData);
-    }
-
-    /**
-     * 处理回调信息
-     */
-    public Object handleCallback(CallbackData callbackData) {
-        // 判断是否为监听的事件，如果不是监听的事件，不做任何处理
-        if (!isAtRobotEvent(callbackData.getEventType())) {
-            return formatResponse(callbackData);
-        }
-
-        // 解析消息，机器人只支持文本消息，暂时不考虑富文本
-        List<Message> messageList = ExtensionLoader.getDefaultExtension(PlatformExt.class).parseMessage(callbackData);
-        if (StringUtils.isEmpty(messageList)) {
-            log.warn("empty message, callbackData: {}", JSONObject.toJSONString(callbackData));
-
-            return formatResponse(callbackData);
-        }
-
-        Message message = messageList.get(0);
-
-        // 根据正则表达式查找serviceId
-        String serviceId = extractServiceId(message.getContent());
-        if (StringUtils.isEmpty(serviceId)) {
-            serviceIdNotFoundTip(message.getThirdMessageId());
-
-            return formatResponse(callbackData);
-        }
-
-        // 找到直接创建群聊，拉人并发送消息
-        String chatGroupId = ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup("", "");
-
-        // 查询对应的人
-
-        // 拉人进群
-        ExtensionLoader.getDefaultExtension(PlatformExt.class).addMemberToChatGroup(chatGroupId, null);
-
-        // 推送故障或问题
-
-        // 插入数据库记录
+        // 进行回调处理
+        handleCallback(callbackData);
 
         return formatResponse(callbackData);
     }
 
     /**
-     * 未找到服务ID，给出对应的提示
+     * 处理回调信息
      */
-    private void serviceIdNotFoundTip(String thirdMessageId) {
-        String text = "根据配置值[" + alarmBotProperties.getServiceIdRegExp() + "]无法解析出serviceId，请检查配置是否正确！";
+    public void handleCallback(CallbackData callbackData) {
+        // 判断是否为监听的事件，如果不是监听的事件，不做任何处理
+        if (!isAtRobotEvent(callbackData.getEventType())) {
+            log.info("eventType: {}  not at robot will ignored.", callbackData.getEventType());
 
-        // 群聊发起，推送正则表达式错误的提示到群聊
-        if (!StringUtils.isEmpty(thirdMessageId)) {
-            ExtensionLoader.getDefaultExtension(PlatformExt.class).reply(thirdMessageId, "【温馨提醒】", text);
-        } else {
-            throw new IllegalArgumentException(text);
-        }
-    }
-
-    /**
-     * 从消息体中解析出serviceId
-     */
-    private String extractServiceId(String messageContent) {
-        if (pattern == null) {
-            pattern = Pattern.compile(alarmBotProperties.getServiceIdRegExp());
+            return;
         }
 
-        Matcher matcher = pattern.matcher(messageContent);
-        if (matcher.find()) {
-            return matcher.group(0);
-        }
+        // 解析消息，机器人只支持文本消息，暂时不考虑富文本，因此只解析出一条记录
+        List<Message> messageList = ExtensionLoader.getDefaultExtension(PlatformExt.class).parseMessage(callbackData);
 
-        return null;
+        // 执行对应的指令
+        commandExecutor.execute(messageList.get(0));
     }
 
     /**

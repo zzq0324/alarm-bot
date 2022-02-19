@@ -31,7 +31,7 @@ public class MessageDaoTest {
         message.setSender(new Operator("testName", "openId", "unionId"));
         message.setChatGroupId("chatGroupId");
         message.setSendTime(new Date());
-        message.setType(MessageType.TEXT);
+        message.setMessageType(MessageType.TEXT);
 
         messageDao.insert(message);
         Assertions.assertTrue(message.getId() > 0);

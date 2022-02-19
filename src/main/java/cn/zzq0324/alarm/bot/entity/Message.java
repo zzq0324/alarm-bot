@@ -36,6 +36,11 @@ public class Message {
     private String thirdMessageId;
 
     /**
+     * 项目ID
+     */
+    private Long projectId;
+
+    /**
      * 群组ID
      */
     private String chatGroupId;

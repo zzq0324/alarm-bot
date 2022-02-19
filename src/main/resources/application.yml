@@ -35,4 +35,4 @@ lark:
 
 alarm-bot:
   # serviceId对应的正则表达式
-  service-id-reg-exp:
+  project-name-reg-exp:
