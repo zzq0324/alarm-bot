@@ -1,7 +1,10 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl;
 
+import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
+import cn.zzq0324.alarm.bot.constant.LarkConstants;
 import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.constant.Platform;
+import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
@@ -54,26 +57,17 @@ public class Lark implements PlatformExt {
     @Autowired
     private Config config;
 
-    @Override
-    public void reply(String messageId, String title, String text) {
-        ImService imService = new ImService(config);
-        MessageReplyReqBody reqBody = new MessageReplyReqBody();
-        reqBody.setMsgType("text");
-        reqBody.setContent(text);
+    @Autowired
+    private AlarmBotProperties alarmBotProperties;
 
-        executeCaller(imService.getMessages().reply(reqBody).setMessageId(messageId));
+    @Override
+    public void replyAlarmMessage(String messageId, String text) {
+        replyText(messageId, null, text);
     }
 
     @Override
-    public void send(String receiveId, String messageType, String content) {
-        ImService imService = new ImService(config);
-        MessageCreateReqBody reqBody = new MessageCreateReqBody();
-        reqBody.setMsgType(messageType);
-        reqBody.setContent(content);
-        reqBody.setReceiveId(receiveId);
+    public void pushEvent(Event event) {
 
-        // receiveIdType为chat_id代表群组id
-        executeCaller(imService.getMessages().create(reqBody).setReceiveIdType("chat_id"));
     }
 
     @Override
@@ -129,7 +123,7 @@ public class Lark implements PlatformExt {
         String content = FileUtils.readResourceAsString("/lark/help.json");
 
         // 响应式卡片
-        send(message.getChatGroupId(), "interactive", content);
+        send(message.getChatGroupId(), LarkConstants.MESSAGE_TYPE_INTERACTIVE, content);
     }
 
     @Override
@@ -153,6 +147,45 @@ public class Lark implements PlatformExt {
         return memberPlatformInfo;
     }
 
+    public void send(String receiveId, String messageType, String content) {
+        ImService imService = new ImService(config);
+        MessageCreateReqBody reqBody = new MessageCreateReqBody();
+        reqBody.setMsgType(messageType);
+        reqBody.setContent(content);
+        reqBody.setReceiveId(receiveId);
+
+        // receiveIdType为chat_id代表群组id
+        executeCaller(imService.getMessages().create(reqBody).setReceiveIdType("chat_id"));
+    }
+
+    public void reply(String messageId, String messageType, String content) {
+        ImService imService = new ImService(config);
+        MessageReplyReqBody reqBody = new MessageReplyReqBody();
+        reqBody.setMsgType(messageType);
+        reqBody.setContent(content);
+
+        // receiveIdType为chat_id代表群组id
+        executeCaller(imService.getMessages().reply(reqBody).setMessageId(messageId));
+    }
+
+    public void sendText(String receiveId, String title, String text) {
+        send(receiveId, LarkConstants.MESSAGE_TYPE_TEXT, buildTextContent(title, text));
+    }
+
+    public void replyText(String messageId, String title, String text) {
+        reply(messageId, LarkConstants.MESSAGE_TYPE_TEXT, buildTextContent(title, text));
+    }
+
+    private String buildTextContent(String title, String text) {
+        JSONObject content = new JSONObject();
+        content.put("text", text);
+        if (StringUtils.hasLength(title)) {
+            content.put("title", title);
+        }
+
+        return content.toJSONString();
+    }
+
     public String getOpenIdByMobile(String mobile) {
         Map<String, Object> params = new HashMap<>();
         params.put("mobiles", mobile);
@@ -165,7 +198,7 @@ public class Lark implements PlatformExt {
         JSONObject mobileUsers = response.getJSONObject("mobile_users");
 
         if (mobileUsers.containsKey(mobile)) {
-            return mobileUsers.getJSONArray(mobile).getJSONObject(0).getString("user_id");
+            return mobileUsers.getJSONArray(mobile).getJSONObject(0).getString("open_id");
         }
 
         return null;

@@ -37,8 +37,9 @@ create TABLE if not exists `event` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
   PRIMARY KEY (`id`),
-  KEY `idx_project` (`project_id`) USING BTREE,
-  KEY `idx_message_id` (`third_message_id`) USING BTREE
+  KEY `idx_project_ct` (`project_id`,`create_time`) USING BTREE,
+  KEY `idx_message_id` (`third_message_id`) USING BTREE,
+  KEY `idx_chat_group_id` (`chat_group_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 create TABLE if not exists `message` (

@@ -19,4 +19,9 @@ public class AlarmBotProperties {
      * 服务ID对应的正则表达式，从正则表达式中解析出serviceId
      */
     private String projectNameRegExp;
+
+    /**
+     * 告警回复消息
+     */
+    private String replyText;
 }

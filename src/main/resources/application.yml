@@ -36,3 +36,4 @@ lark:
 alarm-bot:
   # serviceId对应的正则表达式
   project-name-reg-exp: 'PINPOINT Alarm - (\w+-\w+)'
+  reply-text: '告警信息已收到，已另外创建群聊沟通，解决后会同步进度到本群'

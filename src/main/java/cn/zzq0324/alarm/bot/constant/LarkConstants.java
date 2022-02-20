@@ -21,4 +21,14 @@ public interface LarkConstants {
      * 事件通知的回调类型
      */
     String CALLBACK_TYPE_EVENT_CALLBACK = "event_callback";
+
+    /**
+     * 消息类型-文本
+     */
+    String MESSAGE_TYPE_TEXT = "text";
+
+    /**
+     * 消息类型-卡片
+     */
+    String MESSAGE_TYPE_INTERACTIVE = "interactive";
 }

@@ -22,4 +22,9 @@ public class LarkTest {
     public void testGetOpenIdByMobile() {
         Assertions.assertNotNull(lark.getOpenIdByMobile("180xxxxx"));
     }
+
+    @Test
+    public void testDestroyChatGroup() {
+        lark.destroyChatGroup("oc_3fd1a44c8698de6ce122d3de2600ecd5");
+    }
 }

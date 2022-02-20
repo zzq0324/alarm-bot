@@ -39,7 +39,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CreateEvent implements Command<CreateEventContext> {
 
-    private static String CHAT_GROUP_NAME = "[%s]告警群";
+    private static String CHAT_GROUP_NAME = "⚠️[%s]告警群";
+    private static String CHAT_GROUP_DESC = "问题结束后请按格式标记解决，有任何问题可以先@Bot";
 
     @Autowired
     private AlarmBotProperties alarmBotProperties;
@@ -54,13 +55,11 @@ public class CreateEvent implements Command<CreateEventContext> {
 
     @PostConstruct
     public void initPattern() {
-        log.info("project name reg expression: {}", alarmBotProperties.getProjectNameRegExp());
         pattern = Pattern.compile(alarmBotProperties.getProjectNameRegExp());
     }
 
     @Override
     public CommandContext matchCommand(Message message) {
-        log.info("message: {}", JSONObject.toJSONString(message));
         // 根据正则表达式查找project
         String projectName = extractProjectName(message.getContent());
         Project project = StringUtils.isEmpty(projectName) ? null : projectService.getByName(projectName);
@@ -84,45 +83,68 @@ public class CreateEvent implements Command<CreateEventContext> {
             return;
         }
 
+        Message message = context.getMessage();
         // 查询事件是否已经创建过
-        Event existEvent = eventService.getByThirdMessageId(context.getMessage().getThirdMessageId());
+        Event existEvent = eventService.getByThirdMessageId(message.getThirdMessageId());
         if (existEvent != null) {
             log.warn("event: {} exists", JSONObject.toJSONString(existEvent));
 
             return;
         }
 
-        String chatGroupName = String.format(CHAT_GROUP_NAME, project.getName());
+        // 查找项目对应的人，用于接收告警信息
+        List<String> thirdPlatformOpenIdList = getMemberOpenIdList(project);
 
+        // 创建群聊并拉人入群
+        String chatGroupId = createChatGroup(project, thirdPlatformOpenIdList);
+
+        // 插入事件记录
+        Event event = addEvent(project, message, chatGroupId);
+
+        // 推送故障或问题
+        ExtensionLoader.getDefaultExtension(PlatformExt.class).pushEvent(event);
+
+        //  回复群消息，告知拉群处理
+        ExtensionLoader.getDefaultExtension(PlatformExt.class)
+            .replyAlarmMessage(message.getThirdMessageId(), alarmBotProperties.getReplyText());
+    }
+
+    private String createChatGroup(Project project, List<String> thirdPlatformOpenIdList) {
+        String chatGroupName = String.format(CHAT_GROUP_NAME, project.getName());
+        // 找到直接创建群聊，拉人并发送消息
+        String chatGroupId =
+            ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup(chatGroupName, CHAT_GROUP_DESC);
+        // 拉人进群
+        ExtensionLoader.getDefaultExtension(PlatformExt.class)
+            .addMemberToChatGroup(chatGroupId, thirdPlatformOpenIdList);
+
+        return chatGroupId;
+    }
+
+    private Event addEvent(Project project, Message message, String chatGroupId) {
+        Event event = new Event();
+        event.setEventStatus(EventStatus.CREATED);
+        event.setChatGroupId(chatGroupId);
+        event.setDetail(message.getContent());
+        event.setThirdMessageId(message.getThirdMessageId());
+        event.setProjectId(project.getId());
+        eventService.addEvent(event);
+
+        return event;
+    }
+
+    private List<String> getMemberOpenIdList(Project project) {
         // 查询对应的人
-        List<String> thirdPlatformOpenIdSet = new ArrayList<>();
+        List<String> thirdPlatformOpenIdList = new ArrayList<>();
         Set<String> memberIdSet = StringUtils.commaDelimitedListToSet(project.getMemberIds());
         for (String memberIdStr : memberIdSet) {
             Member member = memberService.get(Long.parseLong(memberIdStr));
             MemberPlatformInfo memberPlatformInfo = memberService.getMemberPlatformInfo(member, true);
 
-            thirdPlatformOpenIdSet.add(memberPlatformInfo.getOpenId());
+            thirdPlatformOpenIdList.add(memberPlatformInfo.getOpenId());
         }
 
-        // 找到直接创建群聊，拉人并发送消息
-        String chatGroupId = ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup(chatGroupName, "");
-
-        // 拉人进群
-        ExtensionLoader.getDefaultExtension(PlatformExt.class)
-            .addMemberToChatGroup(chatGroupId, thirdPlatformOpenIdSet);
-
-        // 推送故障或问题
-        // TODO
-
-        // 插入事件记录
-        Event event = new Event();
-        event.setEventStatus(EventStatus.CREATED);
-        event.setChatGroupId(context.getMessage().getChatGroupId());
-        event.setDetail(context.getMessage().getContent());
-        event.setThirdMessageId(context.getMessage().getThirdMessageId());
-        event.setProjectId(project.getId());
-
-        eventService.addEvent(event);
+        return thirdPlatformOpenIdList;
     }
 
     /**
