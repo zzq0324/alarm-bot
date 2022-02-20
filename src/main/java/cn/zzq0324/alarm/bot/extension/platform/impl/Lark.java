@@ -164,7 +164,6 @@ public class Lark implements PlatformExt {
         reqBody.setMsgType(messageType);
         reqBody.setContent(content);
 
-        // receiveIdType为chat_id代表群组id
         executeCaller(imService.getMessages().reply(reqBody).setMessageId(messageId));
     }
 

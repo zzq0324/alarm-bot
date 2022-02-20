@@ -1,6 +1,15 @@
 # HTTP监听端口
 server:
   port: 8888
+  tomcat:
+    # 应用所在目录
+    basedir: /home/ubuntu/alarm-bot-1.0.0-SNAPSHOT
+    accesslog:
+      enabled: true
+      suffix: '.log'
+      prefix: access
+      file-date-format: '.yyyy-MM-dd'
+      directory: 'logs'
 
 # datasource config
 spring:

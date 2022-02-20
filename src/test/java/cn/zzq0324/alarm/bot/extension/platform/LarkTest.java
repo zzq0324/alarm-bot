@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.extension.platform;
 
+import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.extension.platform.impl.Lark;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ public class LarkTest {
 
     @Autowired
     private Lark lark;
+    @Autowired
+    private AlarmBotProperties alarmBotProperties;
 
     @Test
     public void testGetOpenIdByMobile() {
@@ -26,5 +29,10 @@ public class LarkTest {
     @Test
     public void testDestroyChatGroup() {
         lark.destroyChatGroup("oc_3fd1a44c8698de6ce122d3de2600ecd5");
+    }
+
+    @Test
+    public void testReplyText() {
+        lark.replyAlarmMessage("om_bf38ecfdd34d8d5e7dc9f0df70036c6d", alarmBotProperties.getReplyText());
     }
 }

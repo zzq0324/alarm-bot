@@ -13,10 +13,10 @@ import com.larksuite.oapi.core.event.model.Fuzzy;
 import com.larksuite.oapi.core.utils.Jsons;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * description: 回调处理 <br>
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
-@Controller
+@RestController
 @RequestMapping("/lark")
 @Slf4j
 public class LarkCallbackController extends AbstractCallback {
