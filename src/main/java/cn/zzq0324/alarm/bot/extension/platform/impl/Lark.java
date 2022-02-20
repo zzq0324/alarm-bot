@@ -7,6 +7,7 @@ import cn.zzq0324.alarm.bot.constant.Platform;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
+import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.util.FileUtils;
@@ -61,13 +62,17 @@ public class Lark implements PlatformExt {
     private AlarmBotProperties alarmBotProperties;
 
     @Override
-    public void replyAlarmMessage(String messageId, String text) {
+    public void replyText(String messageId, String text) {
         replyText(messageId, null, text);
     }
 
     @Override
-    public void pushEvent(Event event) {
+    public void pushEvent(Event event, Project project) {
+        JSONObject data = (JSONObject)JSONObject.toJSON(event);
+        data.put("projectName", project.getName());
+        String cardContent = FileUtils.getFileContent("/lark/event-info.json", data, true);
 
+        send(event.getChatGroupId(), LarkConstants.MESSAGE_TYPE_INTERACTIVE, cardContent);
     }
 
     @Override
@@ -120,7 +125,7 @@ public class Lark implements PlatformExt {
     @Override
     public void help(Message message) {
         // 获取帮助模板
-        String content = FileUtils.readResourceAsString("/lark/help.json");
+        String content = FileUtils.getFileContent("/lark/help.json");
 
         // 响应式卡片
         send(message.getChatGroupId(), LarkConstants.MESSAGE_TYPE_INTERACTIVE, content);

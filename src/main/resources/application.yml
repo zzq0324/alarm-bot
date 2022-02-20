@@ -43,6 +43,10 @@ lark:
   encrypt-key: Z4ic2Gi3iFDVvurIzakLnRUpKGExHyLX
 
 alarm-bot:
-  # serviceId对应的正则表达式
+  # serviceId对应的正则表达式，只允许有一对括号
   project-name-reg-exp: 'PINPOINT Alarm - (\w+-\w+)'
-  reply-text: '告警信息已收到，已另外创建群聊沟通，解决后会同步进度到本群'
+  reply-alarm: '告警信息已收到，已另外创建群聊沟通，解决后会同步进度到本群'
+  reply-event-solved: '收到，本群预计5分钟后解散，感谢大家的参与！'
+  not-in-alarm-group: '当前群不支持 /solve 指令'
+  solve-summary-missing: '告警小结缺失。\n使用帮助：使用方式：@Bot   /solve   <小结信息> \n举例说明：@Bot   /solve   空指针问题，已重新发版解决'
+  reply-solved-to-chat-group: '告警已解除，解决时效：%d分钟'

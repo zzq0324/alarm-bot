@@ -23,5 +23,25 @@ public class AlarmBotProperties {
     /**
      * 告警回复消息
      */
-    private String replyText;
+    private String replyAlarm;
+
+    /**
+     * 回复已解决到告警群聊
+     */
+    private String replySolvedToChatGroup;
+
+    /**
+     * 回复告警已解决
+     */
+    private String replyEventSolved;
+
+    /**
+     * 非告警群中发起/solve命令时提示
+     */
+    private String notInAlarmGroup;
+
+    /**
+     * 告警小结缺失
+     */
+    private String solveSummaryMissing;
 }

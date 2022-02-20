@@ -33,6 +33,6 @@ public class LarkTest {
 
     @Test
     public void testReplyText() {
-        lark.replyAlarmMessage("om_bf38ecfdd34d8d5e7dc9f0df70036c6d", alarmBotProperties.getReplyText());
+        lark.replyText("om_bf38ecfdd34d8d5e7dc9f0df70036c6d", alarmBotProperties.getReplyAlarm());
     }
 }

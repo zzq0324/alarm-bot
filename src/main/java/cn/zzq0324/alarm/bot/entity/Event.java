@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.entity;
 
 import cn.zzq0324.alarm.bot.constant.EventStatus;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
@@ -50,10 +51,12 @@ public class Event {
     /**
      * 创建时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 事件完成时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date finishTime;
 }

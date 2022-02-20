@@ -4,6 +4,7 @@ import cn.zzq0324.alarm.bot.constant.Platform;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
+import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
@@ -20,12 +21,12 @@ import java.util.List;
 public class DingTalk implements PlatformExt {
 
     @Override
-    public void replyAlarmMessage(String messageId, String text) {
+    public void replyText(String messageId, String text) {
 
     }
 
     @Override
-    public void pushEvent(Event event) {
+    public void pushEvent(Event event, Project project) {
 
     }
 

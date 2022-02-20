@@ -3,6 +3,7 @@ package cn.zzq0324.alarm.bot.extension.platform;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
+import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.spi.SPI;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 
@@ -20,12 +21,12 @@ public interface PlatformExt {
     /**
      * 回复告警信息
      */
-    void replyAlarmMessage(String messageId, String text);
+    void replyText(String messageId, String text);
 
     /**
      * 发送信息到群聊
      */
-    void pushEvent(Event event);
+    void pushEvent(Event event, Project project);
 
     /**
      * 解析消息

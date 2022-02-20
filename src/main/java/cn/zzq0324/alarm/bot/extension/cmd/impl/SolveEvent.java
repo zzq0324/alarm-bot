@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.extension.cmd.impl;
 
+import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.constant.CommandConstants;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.Message;
@@ -12,7 +13,8 @@ import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * description: SolveEvent <br>
@@ -26,6 +28,8 @@ public class SolveEvent implements Command<SolveEventContext> {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private AlarmBotProperties alarmBotProperties;
 
     @Override
     public CommandContext matchCommand(Message message) {
@@ -33,7 +37,8 @@ public class SolveEvent implements Command<SolveEventContext> {
         if (message.getContent().contains(CommandConstants.SOLVE_EVENT)) {
             Event event = eventService.getByChatGroupId(message.getChatGroupId());
 
-            return SolveEventContext.builder().command(CommandConstants.SOLVE_EVENT).event(event).build();
+            return SolveEventContext.builder().command(CommandConstants.SOLVE_EVENT).message(message).event(event)
+                .build();
         }
 
         return null;
@@ -41,23 +46,36 @@ public class SolveEvent implements Command<SolveEventContext> {
 
     @Override
     public void execute(SolveEventContext context) {
+        Message message = context.getMessage();
+
+        // TODO 如果命令未带小结信息，则推送消息告知完善
+
         // 代表根据群在event列表找不到记录，说明是其他地方发起，不处理
         if (context.getEvent() == null) {
+            ExtensionLoader.getDefaultExtension(PlatformExt.class)
+                .replyText(message.getThirdMessageId(), alarmBotProperties.getNotInAlarmGroup());
+
             return;
         }
 
-        String chatGroupId = context.getEvent().getChatGroupId();
+        Event event = context.getEvent();
+        String chatGroupId = event.getChatGroupId();
 
-        // TODO 推送感谢，告知即将解散
+        //  回复群消息，感谢并告知即将解散
+        ExtensionLoader.getDefaultExtension(PlatformExt.class)
+            .replyText(message.getThirdMessageId(), alarmBotProperties.getReplyEventSolved());
 
         // TODO 下载群聊消息
 
         // 如果是群聊发起，解散群聊
-        if (StringUtils.hasLength(chatGroupId)) {
-            ExtensionLoader.getDefaultExtension(PlatformExt.class).destroyChatGroup(chatGroupId);
-        }
+        ExtensionLoader.getDefaultExtension(PlatformExt.class).destroyChatGroup(chatGroupId);
 
         // 回复原来的群聊消息，告知告警已解除以及处理时效
+        long currentTimeMillis = System.currentTimeMillis();
+        long eventCreateTimeMillis = event.getCreateTime().getTime();
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - eventCreateTimeMillis);
+        String replyMessage = String.format(alarmBotProperties.getReplySolvedToChatGroup(), minutes);
+        ExtensionLoader.getDefaultExtension(PlatformExt.class).replyText(event.getThirdMessageId(), replyMessage);
 
         // 增加事件日志
     }

@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -102,11 +103,11 @@ public class CreateEvent implements Command<CreateEventContext> {
         Event event = addEvent(project, message, chatGroupId);
 
         // 推送故障或问题
-        ExtensionLoader.getDefaultExtension(PlatformExt.class).pushEvent(event);
+        ExtensionLoader.getDefaultExtension(PlatformExt.class).pushEvent(event, project);
 
         //  回复群消息，告知拉群处理
         ExtensionLoader.getDefaultExtension(PlatformExt.class)
-            .replyAlarmMessage(message.getThirdMessageId(), alarmBotProperties.getReplyText());
+            .replyText(message.getThirdMessageId(), alarmBotProperties.getReplyAlarm());
     }
 
     private String createChatGroup(Project project, List<String> thirdPlatformOpenIdList) {
@@ -128,6 +129,8 @@ public class CreateEvent implements Command<CreateEventContext> {
         event.setDetail(message.getContent());
         event.setThirdMessageId(message.getThirdMessageId());
         event.setProjectId(project.getId());
+        event.setCreateTime(new Date());
+
         eventService.addEvent(event);
 
         return event;
