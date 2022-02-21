@@ -3,9 +3,12 @@ package cn.zzq0324.alarm.bot.extension.platform.impl.lark;
 import cn.zzq0324.alarm.bot.constant.LarkConstants;
 import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.entity.Message;
+import cn.zzq0324.alarm.bot.vo.Operator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.larksuite.oapi.service.contact.v3.model.User;
 import com.larksuite.oapi.service.im.v1.model.Mention;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,6 +32,9 @@ import java.util.stream.Collectors;
 public class LarkMessageParser {
 
     private static final Pattern AT_USER_PATTERN = Pattern.compile("(@_user_\\d)");
+
+    @Autowired
+    private LarkHelper larkHelper;
 
     /**
      * 解析的格式详见：https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/list
@@ -77,7 +83,8 @@ public class LarkMessageParser {
     }
 
     private List<Message> parsePost(FuzzyLarkMessage larkMessage, Map<String, Mention> mentionMap) {
-        JSONArray content = JSONObject.parseArray(larkMessage.getBody().getContent());
+        JSONObject contentJson = JSONObject.parseObject(larkMessage.getBody().getContent());
+        JSONArray content = JSONObject.parseArray(contentJson.getString("content"));
         List<Message> messageList = new ArrayList<>();
 
         for (int i = 0; i < content.size(); i++) {
@@ -107,10 +114,20 @@ public class LarkMessageParser {
                 case "at":
                     contentBuilder.append("@").append(tagContent.getString("user_name")).append(" ");
                     break;
+
                 case "text":
                     contentBuilder.append(tagContent.getString("text"));
                     break;
-                default:
+
+                // 图片
+                case "img":
+                    messageType = MessageType.IMAGE;
+                    break;
+
+                // 多媒体
+                case "media":
+                    messageType = MessageType.MEDIA;
+                    break;
             }
         }
 
@@ -137,8 +154,9 @@ public class LarkMessageParser {
         Message message = new Message();
         message.setThirdMessageId(larkMessage.getMessageId());
         message.setChatGroupId(larkMessage.getChatId());
-        // TODO set sender info
-        // message.setSender(new Operator(larkMessage.getSender().get));
+
+        User user = larkHelper.getLarkUser(larkMessage.getSender().getId(), larkMessage.getSender().getIdType());
+        message.setSender(new Operator(user.getName(), user.getOpenId(), user.getUnionId()));
         message.setSendTime(new Date(larkMessage.getCreateTime()));
 
         return message;

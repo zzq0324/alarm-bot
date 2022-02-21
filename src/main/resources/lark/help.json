@@ -6,7 +6,7 @@
     {
       "tag": "div",
       "text": {
-        "content": "**[常见问题]** \n💡  未正常创建告警群请检查application.yml中**project-name-reg-exp**配置是否正确; \n💡  使用过程中有任何问题欢迎访问[Alarm Bot](https://github.com/zzq0324/alarm-bot)交流; \n💡  修改推送文字可以直接打开application.yml后重启生效",
+        "content": "**[命令说明]** \n🔹 **创建工单: 自动拉群和相关成员进群** \n     使用方式：${createAlarmDemo} \n\n🔹 **关闭工单: 机器人自动下载群聊消息后解散群聊，并标记为已处理** \n     使用方式：@${botName}   /solve   <小结信息>\n     举例说明：@${botName}   /solve   空指针问题，已重新发版解决\n\n🔹 **帮助：机器人返回常见问题和常见指令** \n     使用方式：@${botName}   /help",
         "tag": "lark_md"
       }
     },
@@ -16,15 +16,27 @@
     {
       "tag": "div",
       "text": {
-        "content": "**[命令说明]** \n🔹 **关闭工单: 机器人自动下载群聊消息后解散群聊，并标记为已处理** \n     使用方式：@Bot   /solve   <小结信息>\n     举例说明：@Bot   /solve   空指针问题，已重新发版解决\n\n🔹 **帮助：机器人返回常见问题和常见指令** \n     使用方式：@Bot   /help",
+        "content": "**[常见问题]** \n💡  未正常创建告警群请检查application.yml中**project-name-reg-exp**配置是否正确; \n💡  修改推送文字可以直接打开application.yml后重启生效。",
         "tag": "lark_md"
       }
+    },
+    {
+      "tag": "hr"
+    },
+    {
+      "tag": "note",
+      "elements": [
+        {
+          "tag": "lark_md",
+          "content": "✅  使用过程中有任何问题欢迎访问[Alarm Bot](https://github.com/zzq0324/alarm-bot)交流。"
+        }
+      ]
     }
   ],
   "header": {
     "template": "turquoise",
     "title": {
-      "content": "Alarm Bot使用帮助",
+      "content": "${botName}使用帮助",
       "tag": "plain_text"
     }
   }

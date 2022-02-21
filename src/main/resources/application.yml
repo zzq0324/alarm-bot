@@ -43,6 +43,8 @@ lark:
   encrypt-key: Z4ic2Gi3iFDVvurIzakLnRUpKGExHyLX
 
 alarm-bot:
+  bot-name: 'AlarmBot'
+  create-alarm-demo: '@AlarmBot [PINPOINT Alarm - service-test] HEAP USAGE  is 92%.'
   # serviceId对应的正则表达式，只允许有一对括号
   project-name-reg-exp: 'PINPOINT Alarm - (\w+-\w+)'
   reply-alarm: '告警信息已收到，已另外创建群聊沟通，解决后会同步进度到本群'

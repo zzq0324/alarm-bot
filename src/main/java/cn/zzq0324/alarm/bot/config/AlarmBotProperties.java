@@ -16,6 +16,16 @@ import org.springframework.context.annotation.Configuration;
 public class AlarmBotProperties {
 
     /**
+     * 机器人名称
+     */
+    private String botName;
+
+    /**
+     * 创建命令demo
+     */
+    private String createAlarmDemo;
+
+    /**
      * 服务ID对应的正则表达式，从正则表达式中解析出serviceId
      */
     private String projectNameRegExp;

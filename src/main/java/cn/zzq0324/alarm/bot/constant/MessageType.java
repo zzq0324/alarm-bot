@@ -12,7 +12,7 @@ public enum MessageType {
 
     TEXT(1, "文本"),
     IMAGE(2, "图片"),
-    OTHER(99, "其他");
+    MEDIA(3, "多媒体");
 
     @EnumValue
     private int value;
