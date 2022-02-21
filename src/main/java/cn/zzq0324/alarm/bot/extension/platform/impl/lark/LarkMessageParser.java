@@ -147,7 +147,7 @@ public class LarkMessageParser {
             }
         }
 
-        return result;
+        return "@" + result;
     }
 
     private Message newMessage(FuzzyLarkMessage larkMessage) {

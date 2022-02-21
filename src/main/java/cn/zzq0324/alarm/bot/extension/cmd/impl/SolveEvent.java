@@ -13,6 +13,7 @@ import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -48,12 +49,18 @@ public class SolveEvent implements Command<SolveEventContext> {
     public void execute(SolveEventContext context) {
         Message message = context.getMessage();
 
-        // TODO 如果命令未带小结信息，则推送消息告知完善
-
         // 代表根据群在event列表找不到记录，说明是其他地方发起，不处理
         if (context.getEvent() == null) {
             ExtensionLoader.getDefaultExtension(PlatformExt.class)
                 .replyText(message.getThirdMessageId(), alarmBotProperties.getNotInAlarmGroup());
+
+            return;
+        }
+
+        // 如果命令未带小结信息，则推送消息告知完善
+        if (isSummaryMissing(message.getContent())) {
+            ExtensionLoader.getDefaultExtension(PlatformExt.class)
+                .replyText(message.getThirdMessageId(), alarmBotProperties.getSolveSummaryMissing());
 
             return;
         }
@@ -78,5 +85,20 @@ public class SolveEvent implements Command<SolveEventContext> {
         ExtensionLoader.getDefaultExtension(PlatformExt.class).replyText(event.getThirdMessageId(), replyMessage);
 
         // 增加事件日志
+    }
+
+    /**
+     * 是否缺失告警小结
+     */
+    private boolean isSummaryMissing(String content) {
+        // 替换@机器人信息
+        content = content.replace("@" + alarmBotProperties.getBotName(), "");
+        // 替换/solve命令
+        content = content.replace(CommandConstants.SOLVE_EVENT, "").trim();
+        if (StringUtils.hasLength(content)) {
+            return false;
+        }
+
+        return true;
     }
 }
