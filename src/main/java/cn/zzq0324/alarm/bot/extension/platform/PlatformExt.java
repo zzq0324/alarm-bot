@@ -31,7 +31,7 @@ public interface PlatformExt {
     /**
      * 解析消息
      */
-    List<Message> parseMessage(CallbackData callbackData);
+    List<Message> parseCallbackMessage(CallbackData callbackData);
 
     /**
      * 创建群聊，返回群聊ID

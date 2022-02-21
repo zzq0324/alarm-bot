@@ -28,6 +28,16 @@ public interface LarkConstants {
     String MESSAGE_TYPE_TEXT = "text";
 
     /**
+     * 消息类型-图片
+     */
+    String MESSAGE_TYPE_IMAGE = "image";
+
+    /**
+     * 富文本
+     */
+    String MESSAGE_TYPE_POST = "post";
+
+    /**
      * 消息类型-卡片
      */
     String MESSAGE_TYPE_INTERACTIVE = "interactive";

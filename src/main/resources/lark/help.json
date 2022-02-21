@@ -6,7 +6,7 @@
     {
       "tag": "div",
       "text": {
-        "content": "**[常见问题]** \n💡  未正常创建告警群请检查application.yml中**project-name-reg-exp**配置是否正确; \n💡  使用过程中有任何问题欢迎访问[Alarm Bot](https://github.com/zzq0324/alarm-bot)交流。",
+        "content": "**[常见问题]** \n💡  未正常创建告警群请检查application.yml中**project-name-reg-exp**配置是否正确; \n💡  使用过程中有任何问题欢迎访问[Alarm Bot](https://github.com/zzq0324/alarm-bot)交流; \n💡  修改推送文字可以直接打开application.yml后重启生效",
         "tag": "lark_md"
       }
     },

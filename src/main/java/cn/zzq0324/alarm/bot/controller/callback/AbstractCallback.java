@@ -53,7 +53,8 @@ public abstract class AbstractCallback {
         }
 
         // 解析消息，机器人只支持文本消息，暂时不考虑富文本，因此只解析出一条记录
-        List<Message> messageList = ExtensionLoader.getDefaultExtension(PlatformExt.class).parseMessage(callbackData);
+        List<Message> messageList =
+            ExtensionLoader.getDefaultExtension(PlatformExt.class).parseCallbackMessage(callbackData);
 
         // 执行对应的指令
         commandExecutor.execute(messageList.get(0));

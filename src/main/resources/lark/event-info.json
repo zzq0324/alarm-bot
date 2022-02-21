@@ -15,7 +15,7 @@
         {
           "is_short": true,
           "text": {
-            "content": "**🕐 时间：**\n${createTime}",
+            "content": "**🕐 告警时间：**\n${createTime}",
             "tag": "lark_md"
           }
         }

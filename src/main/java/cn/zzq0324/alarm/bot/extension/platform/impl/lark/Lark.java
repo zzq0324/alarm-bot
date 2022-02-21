@@ -1,8 +1,7 @@
-package cn.zzq0324.alarm.bot.extension.platform.impl;
+package cn.zzq0324.alarm.bot.extension.platform.impl.lark;
 
 import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.constant.LarkConstants;
-import cn.zzq0324.alarm.bot.constant.MessageType;
 import cn.zzq0324.alarm.bot.constant.Platform;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
@@ -20,24 +19,19 @@ import com.larksuite.oapi.core.api.ReqCaller;
 import com.larksuite.oapi.core.api.request.Request;
 import com.larksuite.oapi.core.api.request.RequestOptFn;
 import com.larksuite.oapi.core.api.response.Response;
-import com.larksuite.oapi.core.utils.Jsons;
 import com.larksuite.oapi.service.contact.v3.ContactService;
 import com.larksuite.oapi.service.contact.v3.model.UserGetResult;
 import com.larksuite.oapi.service.im.v1.ImService;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateResult;
 import com.larksuite.oapi.service.im.v1.model.ChatMembersCreateReqBody;
-import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.MessageCreateReqBody;
-import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import com.larksuite.oapi.service.im.v1.model.MessageReplyReqBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +55,9 @@ public class Lark implements PlatformExt {
     @Autowired
     private AlarmBotProperties alarmBotProperties;
 
+    @Autowired
+    private LarkMessageParser larkMessageParser;
+
     @Override
     public void replyText(String messageId, String text) {
         replyText(messageId, null, text);
@@ -76,20 +73,10 @@ public class Lark implements PlatformExt {
     }
 
     @Override
-    public List<Message> parseMessage(CallbackData callbackData) {
-        MessageReceiveEventData eventData =
-            Jsons.DEFAULT_GSON.fromJson(callbackData.getData().toJSONString(), MessageReceiveEventData.class);
+    public List<Message> parseCallbackMessage(CallbackData callbackData) {
+        FuzzyLarkMessage message = new FuzzyLarkMessage(callbackData);
 
-        EventMessage eventMessage = eventData.getMessage();
-
-        Message message = new Message();
-        message.setThirdMessageId(eventMessage.getMessageId());
-        message.setMessageType(MessageType.TEXT);
-        message.setContent(eventMessage.getContent());
-        message.setSendTime(new Date(eventMessage.getCreateTime()));
-        message.setChatGroupId(eventMessage.getChatId());
-
-        return Arrays.asList(message);
+        return larkMessageParser.parse(message);
     }
 
     @Override
@@ -152,6 +139,9 @@ public class Lark implements PlatformExt {
         return memberPlatformInfo;
     }
 
+    /**
+     * 发送消息
+     */
     public void send(String receiveId, String messageType, String content) {
         ImService imService = new ImService(config);
         MessageCreateReqBody reqBody = new MessageCreateReqBody();
@@ -163,6 +153,9 @@ public class Lark implements PlatformExt {
         executeCaller(imService.getMessages().create(reqBody).setReceiveIdType("chat_id"));
     }
 
+    /**
+     * 回复消息
+     */
     public void reply(String messageId, String messageType, String content) {
         ImService imService = new ImService(config);
         MessageReplyReqBody reqBody = new MessageReplyReqBody();
@@ -172,14 +165,23 @@ public class Lark implements PlatformExt {
         executeCaller(imService.getMessages().reply(reqBody).setMessageId(messageId));
     }
 
+    /**
+     * 发送文本
+     */
     public void sendText(String receiveId, String title, String text) {
         send(receiveId, LarkConstants.MESSAGE_TYPE_TEXT, buildTextContent(title, text));
     }
 
+    /**
+     * 回复文本
+     */
     public void replyText(String messageId, String title, String text) {
         reply(messageId, LarkConstants.MESSAGE_TYPE_TEXT, buildTextContent(title, text));
     }
 
+    /**
+     * 构建文本内容
+     */
     private String buildTextContent(String title, String text) {
         JSONObject content = new JSONObject();
         content.put("text", text);

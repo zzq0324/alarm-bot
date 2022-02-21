@@ -1,4 +1,4 @@
-package cn.zzq0324.alarm.bot.extension.platform.impl;
+package cn.zzq0324.alarm.bot.extension.platform.impl.dingtalk;
 
 import cn.zzq0324.alarm.bot.constant.Platform;
 import cn.zzq0324.alarm.bot.entity.Event;
@@ -31,7 +31,7 @@ public class DingTalk implements PlatformExt {
     }
 
     @Override
-    public List<Message> parseMessage(CallbackData callbackData) {
+    public List<Message> parseCallbackMessage(CallbackData callbackData) {
         return null;
     }
 

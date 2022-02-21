@@ -1,7 +1,7 @@
 package cn.zzq0324.alarm.bot.extension.platform;
 
 import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
-import cn.zzq0324.alarm.bot.extension.platform.impl.Lark;
+import cn.zzq0324.alarm.bot.extension.platform.impl.lark.Lark;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
