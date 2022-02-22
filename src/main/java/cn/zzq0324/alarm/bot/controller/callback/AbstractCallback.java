@@ -2,11 +2,11 @@ package cn.zzq0324.alarm.bot.controller.callback;
 
 import cn.zzq0324.alarm.bot.constant.CallbackType;
 import cn.zzq0324.alarm.bot.constant.CommandConstants;
-import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.cmd.Command;
 import cn.zzq0324.alarm.bot.extension.cmd.CommandExecutor;
 import cn.zzq0324.alarm.bot.extension.cmd.context.CommandContext;
+import cn.zzq0324.alarm.bot.extension.cmd.context.CreateEventContext;
 import cn.zzq0324.alarm.bot.extension.cmd.context.HelpContext;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.service.EventService;
@@ -92,9 +92,9 @@ public abstract class AbstractCallback {
             ExtensionLoader.getExtension(Command.class, commandContext.getCommand()).execute(commandContext);
         }
 
-        Event event = eventService.getByChatGroupId(firstMessage.getChatGroupId());
-        // 找得到记录，插入聊天记录
-        if (event != null) {
+        // 创建或者在告警群发群聊消息，直接记录
+        if (commandContext instanceof CreateEventContext
+            || eventService.getByChatGroupId(firstMessage.getChatGroupId()) != null) {
             imMessage.getMessageList().stream().forEach(message -> messageService.add(message));
         }
     }

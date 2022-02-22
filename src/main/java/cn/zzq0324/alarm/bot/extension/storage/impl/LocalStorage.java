@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.extension.storage.impl;
 
 import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
+import cn.zzq0324.alarm.bot.config.ResourceHandlerConfiguration;
 import cn.zzq0324.alarm.bot.extension.storage.StorageExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,12 @@ public class LocalStorage implements StorageExt {
     @Override
     public String upload(byte[] data, String fileName) {
         try {
-            checkResourceFolderExists();
-
             // 格式如：/resource/xxx.png
-            String suffix = alarmBotProperties.getResourceDownloadFolder() + "/" + fileName;
+            String suffix = ResourceHandlerConfiguration.RESOURCE_URL_PREFIX + "/" + fileName;
+            File file = new File(alarmBotProperties.getResourceDownloadFolder() + suffix);
 
-            File file = new File(alarmBotProperties.getResourceDownloadFolder(), suffix);
+            checkFolderExists(file);
+
             FileCopyUtils.copy(data, file);
 
             return alarmBotProperties.getUrlPrefix() + suffix;
@@ -37,8 +38,8 @@ public class LocalStorage implements StorageExt {
         }
     }
 
-    private void checkResourceFolderExists() {
-        File folder = new File(alarmBotProperties.getResourceDownloadFolder());
+    private void checkFolderExists(File file) {
+        File folder = file.getParentFile();
         if (!folder.exists()) {
             folder.mkdirs();
         }

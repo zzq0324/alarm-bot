@@ -62,11 +62,11 @@ public class BaseLarkMessageParser {
             // key格式为@_user_xx
             String key = matcher.group();
             if (mentionMap.containsKey(key) && result.contains(key)) {
-                result = result.replace(key, mentionMap.get(key).getName());
+                result = result.replace(key, "@" + mentionMap.get(key).getName());
             }
         }
 
-        return "@" + result;
+        return result;
     }
 
     public Message newMessage(MessageReceiveEventData eventData) {
