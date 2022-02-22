@@ -13,7 +13,7 @@ import cn.zzq0324.alarm.bot.spi.Extension;
 public class AliyunOssStorage implements StorageExt {
 
     @Override
-    public String upload(byte[] data) {
+    public String upload(byte[] data, String fileName) {
         return null;
     }
 }

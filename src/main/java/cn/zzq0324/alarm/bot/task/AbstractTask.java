@@ -3,6 +3,7 @@ package cn.zzq0324.alarm.bot.task;
 import cn.zzq0324.alarm.bot.constant.TaskType;
 import cn.zzq0324.alarm.bot.entity.Task;
 import cn.zzq0324.alarm.bot.service.TaskService;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,16 +29,25 @@ public abstract class AbstractTask {
     /**
      * 执行任务
      */
-    public abstract void execute();
+    public abstract void run(Task task);
 
     /**
      * 获取未完成任务列表
      */
-    public List<Task> getUnFinishedTaskList() {
-        List<Task> taskList = taskService.getUnFinishedTaskList(getTaskType());
+    public void execute() {
+        try {
+            List<Task> taskList = taskService.getUnFinishedTaskList(getTaskType());
+            log.info("taskType: {}, unfinished task size: {}", getTaskType(), taskList.size());
 
-        log.info("taskType: {}, unfinished task size: {}", getTaskType(), taskList.size());
-
-        return taskList;
+            taskList.stream().forEach(task -> {
+                try {
+                    run(task);
+                } catch (Exception e) {
+                    log.error("execute task: {} error.", JSONObject.toJSONString(task), e);
+                }
+            });
+        } catch (Exception e) {
+            log.error("execute task error, taskType: {}", getTaskType(), e);
+        }
     }
 }

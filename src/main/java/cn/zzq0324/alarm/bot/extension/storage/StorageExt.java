@@ -14,5 +14,5 @@ public interface StorageExt {
     /**
      * 上传附件
      */
-    String upload(byte[] data);
+    String upload(byte[] data, String fileName);
 }

@@ -47,9 +47,4 @@ public class Task {
      * 触发时间
      */
     private Date triggerTime;
-
-    /**
-     * 执行结果
-     */
-    private String result;
 }

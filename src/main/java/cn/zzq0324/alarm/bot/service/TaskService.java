@@ -33,14 +33,18 @@ public class TaskService {
         taskDao.insert(task);
     }
 
+    public void update(Task task) {
+        taskDao.updateById(task);
+    }
+
     /**
      * 获取未完成的任务列表
      */
     public List<Task> getUnFinishedTaskList(TaskType taskType) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.ne("status", Status.FINISH.getValue());
-        queryWrapper.eq("type", taskType.getValue());
-        queryWrapper.lt("next_trigger_time", new Date());
+        queryWrapper.eq("task_type", taskType.getValue());
+        queryWrapper.lt("trigger_time", new Date());
 
         return taskDao.selectList(queryWrapper);
     }

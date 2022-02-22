@@ -59,4 +59,14 @@ public class AlarmBotProperties {
      * N分钟后解散群聊
      */
     private int destroyGroupAfterMinutes;
+
+    /**
+     * URL前缀
+     */
+    private String urlPrefix;
+
+    /**
+     * 资源文件下载目录，本地下载使用
+     */
+    private String resourceDownloadFolder;
 }

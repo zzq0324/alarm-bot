@@ -20,6 +20,7 @@ import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -75,6 +76,7 @@ public class CreateEvent implements Command<CreateEventContext> {
     }
 
     @Override
+    @Transactional
     public void execute(CreateEventContext context) {
         // 根据项目名称查找对应的成员
         Project project = context.getProject();

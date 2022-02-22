@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +63,20 @@ public class Lark implements PlatformExt {
         FuzzyLarkMessage message = new FuzzyLarkMessage(callbackData);
 
         return larkMessageParser.parse(message);
+    }
+
+    @Override
+    public List<Message> downloadChatGroupMessage(String chatGroupId) {
+        List<Message> messageList = new ArrayList<>();
+
+        List<com.larksuite.oapi.service.im.v1.model.Message> larkMessageList =
+            larkHelper.downloadChatMessage(chatGroupId);
+
+        larkMessageList.stream().forEach(larkMessage -> {
+            messageList.addAll(larkMessageParser.parse(new FuzzyLarkMessage(larkMessage)));
+        });
+
+        return messageList;
     }
 
     @Override

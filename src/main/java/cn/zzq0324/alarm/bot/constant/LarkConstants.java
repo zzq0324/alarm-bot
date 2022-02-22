@@ -41,4 +41,9 @@ public interface LarkConstants {
      * 消息类型-卡片
      */
     String MESSAGE_TYPE_INTERACTIVE = "interactive";
+
+    /**
+     * 消息类型-系统消息，例如：xxx加入群聊
+     */
+    String MESSAGE_TYPE_SYSTEM = "system";
 }

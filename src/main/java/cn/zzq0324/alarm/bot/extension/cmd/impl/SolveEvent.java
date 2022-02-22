@@ -17,6 +17,7 @@ import cn.zzq0324.alarm.bot.util.DateUtils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
@@ -52,6 +53,7 @@ public class SolveEvent implements Command<SolveEventContext> {
         return null;
     }
 
+    @Transactional
     @Override
     public void execute(SolveEventContext context) {
         Message message = context.getMessage();

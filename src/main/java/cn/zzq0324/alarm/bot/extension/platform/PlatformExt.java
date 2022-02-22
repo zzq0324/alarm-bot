@@ -34,6 +34,11 @@ public interface PlatformExt {
     List<Message> parseCallbackMessage(CallbackData callbackData);
 
     /**
+     * 下载群聊消息
+     */
+    List<Message> downloadChatGroupMessage(String chatGroupId);
+
+    /**
      * 创建群聊，返回群聊ID
      */
     String createChatGroup(String name, String description);

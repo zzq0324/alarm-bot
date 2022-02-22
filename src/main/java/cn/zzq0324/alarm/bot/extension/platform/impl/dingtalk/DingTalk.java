@@ -36,6 +36,11 @@ public class DingTalk implements PlatformExt {
     }
 
     @Override
+    public List<Message> downloadChatGroupMessage(String chatGroupId) {
+        return null;
+    }
+
+    @Override
     public String createChatGroup(String name, String description) {
         return null;
     }

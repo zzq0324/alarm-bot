@@ -15,9 +15,9 @@ public class DateUtils {
     // 1天的毫秒数
     public static long ONE_DAY_MILLS = TimeUnit.DAYS.toMillis(1);
     // 1小时的毫秒数
-    public static long ONE_HOUR_MILLS = TimeUnit.DAYS.toMillis(1);
+    public static long ONE_HOUR_MILLS = TimeUnit.HOURS.toMillis(1);
     // 1分钟的毫秒数
-    public static long ONE_MINUTE_MILLS = TimeUnit.DAYS.toMillis(1);
+    public static long ONE_MINUTE_MILLS = TimeUnit.MINUTES.toMillis(1);
 
     public static String getDiffText(Date startTime, Date endTime) {
         long mills = endTime.getTime() - startTime.getTime();
@@ -38,7 +38,7 @@ public class DateUtils {
             builder.append(hour).append("时");
         }
 
-        builder.append(minute).append("分");
+        builder.append(minute).append("分钟");
 
         return builder.toString();
     }

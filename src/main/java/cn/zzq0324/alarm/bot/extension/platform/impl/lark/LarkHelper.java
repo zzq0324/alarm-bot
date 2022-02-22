@@ -15,7 +15,9 @@ import com.larksuite.oapi.service.im.v1.ImService;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateResult;
 import com.larksuite.oapi.service.im.v1.model.ChatMembersCreateReqBody;
+import com.larksuite.oapi.service.im.v1.model.Message;
 import com.larksuite.oapi.service.im.v1.model.MessageCreateReqBody;
+import com.larksuite.oapi.service.im.v1.model.MessageListResult;
 import com.larksuite.oapi.service.im.v1.model.MessageReplyReqBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 public class LarkHelper {
 
     private static final RequestOptFn TIMEOUT_OPT = Request.setTimeout(2, TimeUnit.MINUTES);
+
+    private static final int PAGE_SIZE = 50;
 
     @Autowired
     private Config config;
@@ -92,6 +97,30 @@ public class LarkHelper {
         executeCaller(imService.getChats().delete(TIMEOUT_OPT).setChatId(chatGroupId));
     }
 
+    public List<Message> downloadChatMessage(String chatId) {
+        List<Message> messageList = new ArrayList<>();
+
+        ImService imService = new ImService(config);
+        ImService.MessageListReqCall caller =
+            imService.getMessages().list(TIMEOUT_OPT).setContainerIdType("chat").setContainerId(chatId)
+                .setPageSize(PAGE_SIZE);
+
+        boolean hasMore = true;
+        while (hasMore) {
+            MessageListResult result = executeCaller(caller);
+            messageList.addAll(Arrays.asList(result.getItems()));
+
+            if (result.getHasMore()) {
+                caller.setPageToken(result.getPageToken());
+            } else {
+                hasMore = false;
+            }
+        }
+
+        System.out.println(JSONObject.toJSONString(messageList));
+        return messageList;
+    }
+
     /**
      * 发送消息
      */
@@ -132,19 +161,20 @@ public class LarkHelper {
         reply(messageId, LarkConstants.MESSAGE_TYPE_TEXT, buildTextContent(title, text));
     }
 
-    public FileOutputStream downloadResource(String messageId, String fileKey) throws IOException {
-        FileOutputStream outputStream = new FileOutputStream("/Users/zhengzhq/Downloads/aaa.png");
-        ImService imService = new ImService(config);
+    public byte[] downloadResource(String messageId, String fileKey, String type) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            ImService imService = new ImService(config);
 
-        ImService.MessageResourceGetReqCall caller =
-            imService.getMessageResources().get(TIMEOUT_OPT).setMessageId(messageId).setFileKey(fileKey)
-                .setResponseStream(outputStream).setType("image");
+            ImService.MessageResourceGetReqCall caller =
+                imService.getMessageResources().get(TIMEOUT_OPT).setMessageId(messageId).setFileKey(fileKey)
+                    .setResponseStream(outputStream).setType(type);
 
-        executeCaller(caller);
+            executeCaller(caller);
 
-        outputStream.flush();
-
-        return outputStream;
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

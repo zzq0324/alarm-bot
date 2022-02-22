@@ -66,17 +66,15 @@ create TABLE if not exists `lock` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
-
-
 -- 消息表，记录告警群的每一条聊天记录
 create TABLE if not exists `message` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `type` tinyint(2) NOT NULL COMMENT '消息类型，1-文本，2-图片，99-其他',
+  `message_type` tinyint(2) NOT NULL COMMENT '消息类型，1-文本，2-图片，99-其他',
   `third_message_id` varchar(64) COLLATE utf8mb4_general_ci NOT NULL COMMENT '第三方消息ID',
   `chat_group_id` varchar(64) COLLATE utf8mb4_general_ci NOT NULL COMMENT '第三方群组ID',
+  `project_id` bigint(20)  NOT NULL COMMENT '项目ID',
   `content` varchar(1000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '消息内容',
-  `send_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `send_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发送时间',
   `sender` json NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_third_message_id` (`third_message_id`) USING BTREE,
