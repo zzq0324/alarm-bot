@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * description: 应用入口类 <br>
@@ -11,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  */
 @org.springframework.boot.autoconfigure.SpringBootApplication
 @EnableConfigurationProperties
+@EnableScheduling
 public class AlarmBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(AlarmBotApplication.class);

@@ -1,6 +1,6 @@
 package cn.zzq0324.alarm.bot.entity;
 
-import cn.zzq0324.alarm.bot.constant.EventStatus;
+import cn.zzq0324.alarm.bot.constant.Status;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -46,7 +46,7 @@ public class Event {
     /**
      * 事件状态
      */
-    private EventStatus eventStatus;
+    private Status eventStatus;
 
     /**
      * 创建时间
@@ -59,4 +59,9 @@ public class Event {
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date finishTime;
+
+    /**
+     * 小结信息
+     */
+    private String summary;
 }

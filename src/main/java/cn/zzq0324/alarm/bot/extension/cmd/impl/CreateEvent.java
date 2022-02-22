@@ -2,7 +2,7 @@ package cn.zzq0324.alarm.bot.extension.cmd.impl;
 
 import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.constant.CommandConstants;
-import cn.zzq0324.alarm.bot.constant.EventStatus;
+import cn.zzq0324.alarm.bot.constant.Status;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.Member;
 import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
@@ -124,7 +124,7 @@ public class CreateEvent implements Command<CreateEventContext> {
 
     private Event addEvent(Project project, Message message, String chatGroupId) {
         Event event = new Event();
-        event.setEventStatus(EventStatus.CREATED);
+        event.setEventStatus(Status.CREATED);
         event.setChatGroupId(chatGroupId);
         event.setDetail(message.getContent());
         event.setThirdMessageId(message.getThirdMessageId());

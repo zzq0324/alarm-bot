@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,8 +58,9 @@ public class SolveEvent implements Command<SolveEventContext> {
             return;
         }
 
+        String summary = getSummary(message.getContent());
         // 如果命令未带小结信息，则推送消息告知完善
-        if (isSummaryMissing(message.getContent())) {
+        if (StringUtils.isEmpty(summary)) {
             ExtensionLoader.getDefaultExtension(PlatformExt.class)
                 .replyText(message.getThirdMessageId(), alarmBotProperties.getSolveSummaryMissing());
 
@@ -66,39 +68,42 @@ public class SolveEvent implements Command<SolveEventContext> {
         }
 
         Event event = context.getEvent();
-        String chatGroupId = event.getChatGroupId();
 
         //  回复群消息，感谢并告知即将解散
         ExtensionLoader.getDefaultExtension(PlatformExt.class)
             .replyText(message.getThirdMessageId(), alarmBotProperties.getReplyEventSolved());
 
-        // TODO 下载群聊消息
-
-        // 如果是群聊发起，解散群聊
-        ExtensionLoader.getDefaultExtension(PlatformExt.class).destroyChatGroup(chatGroupId);
-
+        // TODO 发起下载任务
+        
         // 回复原来的群聊消息，告知告警已解除以及处理时效
-        long currentTimeMillis = System.currentTimeMillis();
+        replyAlarmGroupSolved(event);
+
+        // 更新事件状态并增加日志
+        event.setFinishTime(new Date());
+        event.setSummary(summary);
+        eventService.closeEvent(event);
+    }
+
+    /**
+     * 回复原来的群聊消息告警已处理
+     */
+    private void replyAlarmGroupSolved(Event event) {
+        long eventFinishTimeMills = event.getFinishTime().getTime();
         long eventCreateTimeMillis = event.getCreateTime().getTime();
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTimeMillis - eventCreateTimeMillis);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(eventFinishTimeMills - eventCreateTimeMillis);
         String replyMessage = String.format(alarmBotProperties.getReplySolvedToChatGroup(), minutes);
         ExtensionLoader.getDefaultExtension(PlatformExt.class).replyText(event.getThirdMessageId(), replyMessage);
-
-        // 增加事件日志
     }
 
     /**
      * 是否缺失告警小结
      */
-    private boolean isSummaryMissing(String content) {
+    private String getSummary(String content) {
         // 替换@机器人信息
         content = content.replace("@" + alarmBotProperties.getBotName(), "");
         // 替换/solve命令
         content = content.replace(CommandConstants.SOLVE_EVENT, "").trim();
-        if (StringUtils.hasLength(content)) {
-            return false;
-        }
 
-        return true;
+        return content;
     }
 }

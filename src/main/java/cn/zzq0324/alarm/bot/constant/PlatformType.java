@@ -6,7 +6,7 @@ package cn.zzq0324.alarm.bot.constant;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
-public interface Platform {
+public interface PlatformType {
 
     /**
      * 飞书
