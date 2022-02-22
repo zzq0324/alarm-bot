@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.extension.cmd.impl;
 
 import cn.zzq0324.alarm.bot.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.constant.CommandConstants;
+import cn.zzq0324.alarm.bot.constant.TaskType;
 import cn.zzq0324.alarm.bot.entity.Event;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.extension.cmd.Command;
@@ -9,14 +10,17 @@ import cn.zzq0324.alarm.bot.extension.cmd.context.CommandContext;
 import cn.zzq0324.alarm.bot.extension.cmd.context.SolveEventContext;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.service.EventService;
+import cn.zzq0324.alarm.bot.service.TaskService;
 import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
+import cn.zzq0324.alarm.bot.util.DateUtils;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * description: SolveEvent <br>
@@ -32,6 +36,8 @@ public class SolveEvent implements Command<SolveEventContext> {
     private EventService eventService;
     @Autowired
     private AlarmBotProperties alarmBotProperties;
+    @Autowired
+    private TaskService taskService;
 
     @Override
     public CommandContext matchCommand(Message message) {
@@ -67,19 +73,24 @@ public class SolveEvent implements Command<SolveEventContext> {
             return;
         }
 
+        Date now = new Date();
         Event event = context.getEvent();
+        event.setFinishTime(now);
 
         //  回复群消息，感谢并告知即将解散
+        String replyDestroyChatGroupText =
+            String.format(alarmBotProperties.getReplyEventSolved(), alarmBotProperties.getDestroyGroupAfterMinutes());
         ExtensionLoader.getDefaultExtension(PlatformExt.class)
-            .replyText(message.getThirdMessageId(), alarmBotProperties.getReplyEventSolved());
+            .replyText(message.getThirdMessageId(), replyDestroyChatGroupText);
 
-        // TODO 发起下载任务
-        
+        // 创建群聊任务
+        Date taskTriggerTime = DateUtils.add(now, alarmBotProperties.getDestroyGroupAfterMinutes(), Calendar.MINUTE);
+        taskService.addTask(TaskType.DOWNLOAD_CHAT_MESSAGE, taskTriggerTime, JSONObject.toJSONString(event));
+
         // 回复原来的群聊消息，告知告警已解除以及处理时效
         replyAlarmGroupSolved(event);
 
         // 更新事件状态并增加日志
-        event.setFinishTime(new Date());
         event.setSummary(summary);
         eventService.closeEvent(event);
     }
@@ -88,10 +99,8 @@ public class SolveEvent implements Command<SolveEventContext> {
      * 回复原来的群聊消息告警已处理
      */
     private void replyAlarmGroupSolved(Event event) {
-        long eventFinishTimeMills = event.getFinishTime().getTime();
-        long eventCreateTimeMillis = event.getCreateTime().getTime();
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(eventFinishTimeMills - eventCreateTimeMillis);
-        String replyMessage = String.format(alarmBotProperties.getReplySolvedToChatGroup(), minutes);
+        String replyMessage = String.format(alarmBotProperties.getReplySolvedToChatGroup(),
+            DateUtils.getDiffText(event.getCreateTime(), event.getFinishTime()));
         ExtensionLoader.getDefaultExtension(PlatformExt.class).replyText(event.getThirdMessageId(), replyMessage);
     }
 

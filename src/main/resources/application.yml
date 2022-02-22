@@ -25,7 +25,7 @@ spring:
   datasource:
     username: bot
     password: Test!@#$1234
-    url: jdbc:mysql://182.254.139.171:3306/alarm-bot?characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false
+    url: jdbc:mysql://localhost:3306/alarm-bot?characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     # hikari数据源特性配置
@@ -57,10 +57,12 @@ alarm-bot:
   # serviceId对应的正则表达式，只允许有一对括号
   project-name-reg-exp: 'PINPOINT Alarm - (\w+-\w+)'
   reply-alarm: '告警信息已收到，已另外创建群聊沟通，解决后会同步进度到本群'
-  reply-event-solved: '收到，本群预计5分钟后解散，感谢大家的参与！'
+  reply-event-solved: '收到，本群预计%d分钟后解散，感谢大家的参与！'
   not-in-alarm-group: '当前群不支持 /solve 指令'
   solve-summary-missing: '告警小结缺失，请在/solve命令后带上告警小结(例如：空指针问题，已修复)'
-  reply-solved-to-chat-group: '告警已解除，处理时效：%d分钟'
+  reply-solved-to-chat-group: '告警已解除，处理时效：%s'
+  # N分钟后解散群聊
+  destroy-group-after-minutes: 15
   task:
     # 每隔一分钟执行一次
     download-chat-message: '0 */1 * * * ?'

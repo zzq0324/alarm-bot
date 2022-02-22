@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.task;
 
+import cn.zzq0324.alarm.bot.constant.TaskType;
 import cn.zzq0324.alarm.bot.entity.Task;
 import cn.zzq0324.alarm.bot.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public abstract class AbstractTask {
     /**
      * 获取任务类型
      */
-    public abstract String getTaskType();
+    public abstract TaskType getTaskType();
 
     /**
      * 执行任务

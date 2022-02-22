@@ -54,4 +54,9 @@ public class AlarmBotProperties {
      * 告警小结缺失
      */
     private String solveSummaryMissing;
+
+    /**
+     * N分钟后解散群聊
+     */
+    private int destroyGroupAfterMinutes;
 }

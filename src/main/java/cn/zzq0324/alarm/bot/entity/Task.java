@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.entity;
 
 import cn.zzq0324.alarm.bot.constant.Status;
+import cn.zzq0324.alarm.bot.constant.TaskType;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
@@ -25,12 +26,7 @@ public class Task {
     /**
      * 任务类型
      */
-    private String type;
-
-    /**
-     * 任务名称
-     */
-    private String name;
+    private TaskType taskType;
 
     /**
      * 触发任务携带的日志
@@ -48,17 +44,12 @@ public class Task {
     private Date createTime;
 
     /**
-     * 下一次触发时间，如果为空代表不需要触发
+     * 触发时间
      */
-    private Date nextTriggerTime;
+    private Date triggerTime;
 
     /**
-     * 上一次触发时间
+     * 执行结果
      */
-    private Date lastTriggerTime;
-
-    /**
-     * 上一次触发结果，如有异常此处填写异常信息
-     */
-    private String lastTriggerResult;
+    private String result;
 }

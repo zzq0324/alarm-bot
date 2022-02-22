@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class DownloadChatMessageTask extends AbstractTask {
     @Override
-    public String getTaskType() {
+    public TaskType getTaskType() {
         return TaskType.DOWNLOAD_CHAT_MESSAGE;
     }
 
