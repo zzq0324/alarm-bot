@@ -8,18 +8,23 @@ import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
+import cn.zzq0324.alarm.bot.extension.platform.impl.lark.parser.LarkMessageParserExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
+import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.util.FileUtils;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
+import cn.zzq0324.alarm.bot.vo.IMMessage;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.api.request.Request;
 import com.larksuite.oapi.core.api.request.RequestOptFn;
+import com.larksuite.oapi.core.utils.Jsons;
 import com.larksuite.oapi.service.contact.v3.model.User;
+import com.larksuite.oapi.service.im.v1.model.EventMessage;
+import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -41,9 +46,6 @@ public class Lark implements PlatformExt {
     @Autowired
     private AlarmBotProperties alarmBotProperties;
 
-    @Autowired
-    private LarkMessageParser larkMessageParser;
-
     @Override
     public void replyText(String messageId, String text) {
         larkHelper.replyText(messageId, null, text);
@@ -59,24 +61,25 @@ public class Lark implements PlatformExt {
     }
 
     @Override
-    public List<Message> parseCallbackMessage(CallbackData callbackData) {
-        FuzzyLarkMessage message = new FuzzyLarkMessage(callbackData);
+    public IMMessage parseIMMessage(CallbackData callbackData) {
+        // 回调数据分sender和message
+        MessageReceiveEventData eventData =
+            Jsons.DEFAULT_GSON.fromJson(callbackData.getData().toJSONString(), MessageReceiveEventData.class);
 
-        return larkMessageParser.parse(message);
-    }
+        EventMessage eventMessage = eventData.getMessage();
 
-    @Override
-    public List<Message> downloadChatGroupMessage(String chatGroupId) {
-        List<Message> messageList = new ArrayList<>();
+        LarkMessageParserExt messageParser =
+            ExtensionLoader.getExtension(LarkMessageParserExt.class, eventMessage.getMessageType());
 
-        List<com.larksuite.oapi.service.im.v1.model.Message> larkMessageList =
-            larkHelper.downloadChatMessage(chatGroupId);
+        // 不支持的解析，不做处理
+        if (messageParser == null) {
+            return null;
+        }
 
-        larkMessageList.stream().forEach(larkMessage -> {
-            messageList.addAll(larkMessageParser.parse(new FuzzyLarkMessage(larkMessage)));
-        });
+        IMMessage imMessage = new IMMessage();
+        messageParser.parse(imMessage, eventData);
 
-        return messageList;
+        return imMessage;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package cn.zzq0324.alarm.bot.extension.cmd.context;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,9 +17,4 @@ public class CommandContext {
      * 命令类型
      */
     private String command;
-
-    /**
-     * 扩展字段信息
-     */
-    private JSONObject extra;
 }

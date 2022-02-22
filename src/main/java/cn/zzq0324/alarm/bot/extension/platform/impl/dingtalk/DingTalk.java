@@ -8,6 +8,7 @@ import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
+import cn.zzq0324.alarm.bot.vo.IMMessage;
 
 import java.util.List;
 
@@ -31,12 +32,7 @@ public class DingTalk implements PlatformExt {
     }
 
     @Override
-    public List<Message> parseCallbackMessage(CallbackData callbackData) {
-        return null;
-    }
-
-    @Override
-    public List<Message> downloadChatGroupMessage(String chatGroupId) {
+    public IMMessage parseIMMessage(CallbackData callbackData) {
         return null;
     }
 

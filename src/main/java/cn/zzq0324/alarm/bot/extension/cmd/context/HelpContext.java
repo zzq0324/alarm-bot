@@ -1,7 +1,6 @@
 package cn.zzq0324.alarm.bot.extension.cmd.context;
 
 import cn.zzq0324.alarm.bot.entity.Message;
-import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,8 +14,8 @@ import lombok.Getter;
 public class HelpContext extends CommandContext {
 
     @Builder
-    public HelpContext(String command, JSONObject extra, Message message) {
-        super(command, extra);
+    public HelpContext(String command, Message message) {
+        super(command);
         this.message = message;
     }
 

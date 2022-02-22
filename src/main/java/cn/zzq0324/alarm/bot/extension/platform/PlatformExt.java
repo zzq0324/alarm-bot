@@ -6,6 +6,7 @@ import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.spi.SPI;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
+import cn.zzq0324.alarm.bot.vo.IMMessage;
 
 import java.util.List;
 
@@ -31,12 +32,7 @@ public interface PlatformExt {
     /**
      * 解析消息
      */
-    List<Message> parseCallbackMessage(CallbackData callbackData);
-
-    /**
-     * 下载群聊消息
-     */
-    List<Message> downloadChatGroupMessage(String chatGroupId);
+    IMMessage parseIMMessage(CallbackData callbackData);
 
     /**
      * 创建群聊，返回群聊ID

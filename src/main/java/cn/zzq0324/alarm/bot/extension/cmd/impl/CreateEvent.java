@@ -20,7 +20,6 @@ import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +40,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CreateEvent implements Command<CreateEventContext> {
 
-    private static String CHAT_GROUP_NAME = "⚠️[%s]告警群";
+    private static String CHAT_GROUP_NAME = "️[%s]告警群";
     private static String CHAT_GROUP_DESC = "问题结束后请按格式标记解决，有任何问题可以先@Bot";
 
     @Autowired
@@ -76,7 +75,6 @@ public class CreateEvent implements Command<CreateEventContext> {
     }
 
     @Override
-    @Transactional
     public void execute(CreateEventContext context) {
         // 根据项目名称查找对应的成员
         Project project = context.getProject();

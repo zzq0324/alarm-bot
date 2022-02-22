@@ -7,7 +7,7 @@ package cn.zzq0324.alarm.bot.constant;
  * version: 1.0 <br>
  */
 public enum LarkEvent {
-    AT_ROBOT_MESSAGE("im.message.receive_v1", "@机器人的消息"),
+    RECEIVE_MESSAGE("im.message.receive_v1", "接收消息"),
     ADD_USER("im.chat.member.user.added_v1", "拉用户入群"),
     DISBAND_GROUP("im.chat.disbanded_v1", "解散群聊");
 

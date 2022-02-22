@@ -55,8 +55,13 @@ public class LarkCallbackController extends AbstractCallback {
     }
 
     @Override
-    public boolean isAtRobotEvent(String eventType) {
-        return LarkEvent.AT_ROBOT_MESSAGE.getEventType().equals(eventType);
+    public boolean isImMessageEvent(String eventType) {
+        return LarkEvent.RECEIVE_MESSAGE.getEventType().equals(eventType);
+    }
+
+    @Override
+    public boolean isAttentionEvent(String eventType) {
+        return false;
     }
 
     @Override

@@ -2,7 +2,6 @@ package cn.zzq0324.alarm.bot.extension.cmd.context;
 
 import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.entity.Project;
-import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,8 +15,8 @@ import lombok.Getter;
 public class CreateEventContext extends CommandContext {
 
     @Builder
-    public CreateEventContext(String command, JSONObject extra, Message message, Project project) {
-        super(command, extra);
+    public CreateEventContext(String command, Message message, Project project) {
+        super(command);
         this.message = message;
         this.project = project;
     }

@@ -46,8 +46,7 @@ public class SolveEvent implements Command<SolveEventContext> {
         if (message.getContent().contains(CommandConstants.SOLVE_EVENT)) {
             Event event = eventService.getByChatGroupId(message.getChatGroupId());
 
-            return SolveEventContext.builder().command(CommandConstants.SOLVE_EVENT).message(message).event(event)
-                .build();
+            return SolveEventContext.builder().command(CommandConstants.SOLVE_EVENT).message(message).build();
         }
 
         return null;
@@ -57,9 +56,10 @@ public class SolveEvent implements Command<SolveEventContext> {
     @Override
     public void execute(SolveEventContext context) {
         Message message = context.getMessage();
+        Event event = eventService.getByChatGroupId(message.getChatGroupId());
 
         // 代表根据群在event列表找不到记录，说明是其他地方发起，不处理
-        if (context.getEvent() == null) {
+        if (event == null) {
             ExtensionLoader.getDefaultExtension(PlatformExt.class)
                 .replyText(message.getThirdMessageId(), alarmBotProperties.getNotInAlarmGroup());
 
@@ -76,7 +76,6 @@ public class SolveEvent implements Command<SolveEventContext> {
         }
 
         Date now = new Date();
-        Event event = context.getEvent();
         event.setFinishTime(now);
 
         //  回复群消息，感谢并告知即将解散
@@ -85,9 +84,9 @@ public class SolveEvent implements Command<SolveEventContext> {
         ExtensionLoader.getDefaultExtension(PlatformExt.class)
             .replyText(message.getThirdMessageId(), replyDestroyChatGroupText);
 
-        // 创建群聊任务
-        Date taskTriggerTime = DateUtils.add(now, alarmBotProperties.getDestroyGroupAfterMinutes(), Calendar.MINUTE);
-        taskService.addTask(TaskType.DOWNLOAD_CHAT_MESSAGE, taskTriggerTime, JSONObject.toJSONString(event));
+        // 增加解散群的定时任务
+        Date triggerTime = DateUtils.add(new Date(), alarmBotProperties.getDestroyGroupAfterMinutes(), Calendar.MINUTE);
+        taskService.addTask(TaskType.DESTROY_CHAT_GROUP, triggerTime, JSONObject.toJSONString(event));
 
         // 回复原来的群聊消息，告知告警已解除以及处理时效
         replyAlarmGroupSolved(event);

@@ -3,7 +3,7 @@ package cn.zzq0324.alarm.bot.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * description: ResourceHandlerConfiguration <br>
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * version: 1.0 <br>
  */
 @Configuration
-public class ResourceHandlerConfiguration extends WebMvcConfigurationSupport {
+public class ResourceHandlerConfiguration implements WebMvcConfigurer {
 
     /**
      * 附件下载前缀
@@ -23,8 +23,8 @@ public class ResourceHandlerConfiguration extends WebMvcConfigurationSupport {
     private AlarmBotProperties alarmBotProperties;
 
     @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(RESOURCE_URL_PREFIX, alarmBotProperties.getResourceDownloadFolder());
-        super.addResourceHandlers(registry);
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**")
+            .addResourceLocations("file:" + alarmBotProperties.getResourceDownloadFolder() + RESOURCE_URL_PREFIX);
     }
 }

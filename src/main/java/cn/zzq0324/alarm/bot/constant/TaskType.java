@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
  */
 public enum TaskType {
 
-    DOWNLOAD_CHAT_MESSAGE(1, "下载群聊消息");
+    DESTROY_CHAT_GROUP(1, "解散群聊");
 
     @EnumValue
     private int value;
