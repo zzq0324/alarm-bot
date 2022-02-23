@@ -69,4 +69,9 @@ public class AlarmBotProperties {
      * 资源文件下载目录，本地下载使用
      */
     private String resourceDownloadFolder;
+
+    /**
+     * 项目成员缺失
+     */
+    private String projectMemberMissing;
 }

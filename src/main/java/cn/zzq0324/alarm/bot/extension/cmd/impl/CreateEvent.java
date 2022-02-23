@@ -63,10 +63,10 @@ public class CreateEvent implements Command<CreateEventContext> {
     public CommandContext matchCommand(Message message) {
         // 根据正则表达式查找project
         String projectName = extractProjectName(message.getContent());
-        Project project = StringUtils.isEmpty(projectName) ? null : projectService.getByName(projectName);
 
         // 符合新建事件，根据正则表达式能得出projectName并且数据库有配置该项目的告警监听
-        if (StringUtils.hasLength(projectName) && project != null) {
+        if (StringUtils.hasLength(projectName)) {
+            Project project = projectService.getByName(projectName);
             return CreateEventContext.builder().project(project).message(message).command(CommandConstants.CREATE_EVENT)
                 .build();
         }
@@ -78,13 +78,16 @@ public class CreateEvent implements Command<CreateEventContext> {
     public void execute(CreateEventContext context) {
         // 根据项目名称查找对应的成员
         Project project = context.getProject();
-        if (StringUtils.isEmpty(project.getMemberIds())) {
-            log.warn("project: {} memberIds not configured!", project.getName());
+        Message message = context.getMessage();
+
+        // 找不到项目或者项目成员未配置
+        if (project == null || StringUtils.isEmpty(project.getMemberIds())) {
+            ExtensionLoader.getDefaultExtension(PlatformExt.class)
+                .replyText(message.getThirdMessageId(), alarmBotProperties.getProjectMemberMissing());
 
             return;
         }
 
-        Message message = context.getMessage();
         // 查询事件是否已经创建过
         Event existEvent = eventService.getByThirdMessageId(message.getThirdMessageId());
         if (existEvent != null) {

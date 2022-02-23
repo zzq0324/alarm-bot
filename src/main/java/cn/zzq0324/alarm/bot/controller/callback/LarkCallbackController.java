@@ -7,7 +7,7 @@ import cn.zzq0324.alarm.bot.vo.CallbackData;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
 import com.larksuite.oapi.core.Decrypt;
-import com.larksuite.oapi.core.card.Card;
+import com.larksuite.oapi.core.card.mode.Card;
 import com.larksuite.oapi.core.card.mode.Challenge;
 import com.larksuite.oapi.core.event.model.Fuzzy;
 import com.larksuite.oapi.core.utils.Jsons;

@@ -17,14 +17,16 @@ public class ResourceHandlerConfiguration implements WebMvcConfigurer {
     /**
      * 附件下载前缀
      */
-    public static final String RESOURCE_URL_PREFIX = "/resource";
+    public static final String RESOURCE_URL_PREFIX = "/files";
 
     @Autowired
     private AlarmBotProperties alarmBotProperties;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
-            .addResourceLocations("file:" + alarmBotProperties.getResourceDownloadFolder() + RESOURCE_URL_PREFIX);
+        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+
+        registry.addResourceHandler(RESOURCE_URL_PREFIX + "/**")
+            .addResourceLocations("file:" + alarmBotProperties.getResourceDownloadFolder() + RESOURCE_URL_PREFIX + "/");
     }
 }

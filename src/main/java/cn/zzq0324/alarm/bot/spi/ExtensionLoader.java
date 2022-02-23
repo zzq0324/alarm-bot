@@ -90,8 +90,15 @@ public class ExtensionLoader<T> {
      * 获取扩展实现节点实例
      */
     public static <T> T getExtension(Class<T> type, String extensionName) {
+        return getExtension(type, extensionName, false);
+    }
+
+    /**
+     * 获取扩展实现节点实例
+     */
+    public static <T> T getExtension(Class<T> type, String extensionName, boolean isCheck) {
         ExtensionLoader<T> extensionLoader = ExtensionLoader.getExtensionLoader(type);
-        if (!extensionLoader.extensionMap.containsKey(extensionName)) {
+        if (isCheck && !extensionLoader.extensionMap.containsKey(extensionName)) {
             throw new IllegalArgumentException("extension not exists, extensionName: " + extensionName);
         }
 

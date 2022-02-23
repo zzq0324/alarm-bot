@@ -28,7 +28,7 @@ import java.util.Map;
 @Slf4j
 @Extension(name = LarkConstants.MESSAGE_TYPE_POST, summary = "飞书富文本消息解析")
 public class LarkPostMessageParser extends BaseLarkMessageParser implements LarkMessageParserExt {
-    
+
     @Override
     public void parse(IMMessage imMessage, MessageReceiveEventData eventData) {
         EventMessage eventMessage = eventData.getMessage();
@@ -75,7 +75,8 @@ public class LarkPostMessageParser extends BaseLarkMessageParser implements Lark
                 // 图片
                 case "img":
                     messageType = MessageType.IMAGE;
-                    downloadAndUpload(message.getThirdMessageId(), tagContent.getString("image_key"));
+                    String url = downloadAndUpload(message.getThirdMessageId(), tagContent.getString("image_key"));
+                    contentBuilder.append(url);
                     break;
 
                 // 多媒体及其他暂时不处理

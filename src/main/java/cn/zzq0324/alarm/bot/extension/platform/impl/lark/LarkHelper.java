@@ -1,6 +1,8 @@
 package cn.zzq0324.alarm.bot.extension.platform.impl.lark;
 
 import cn.zzq0324.alarm.bot.constant.LarkConstants;
+import cn.zzq0324.alarm.bot.vo.LarkGetUserIdRequest;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.Config;
 import com.larksuite.oapi.core.api.AccessTokenType;
@@ -28,9 +30,7 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -161,6 +161,9 @@ public class LarkHelper {
         reply(messageId, LarkConstants.MESSAGE_TYPE_TEXT, buildTextContent(title, text));
     }
 
+    /**
+     * 下载资源文件
+     */
     public byte[] downloadResource(String messageId, String fileKey, String type) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ImService imService = new ImService(config);
@@ -191,18 +194,19 @@ public class LarkHelper {
     }
 
     public String getOpenIdByMobile(String mobile) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("mobiles", mobile);
+        LarkGetUserIdRequest params = new LarkGetUserIdRequest();
+        params.setMobiles(new String[] {mobile});
 
-        Request<Map, JSONObject> request =
-            Request.newRequest("user/v1/batch_get_id", "POST", AccessTokenType.Tenant, null, new JSONObject(),
-                Request.setQueryParams(params));
+        Request<LarkGetUserIdRequest, JSONObject> request =
+            Request.newRequest("contact/v3/users/batch_get_id", "POST", AccessTokenType.Tenant, params,
+                new JSONObject());
 
         JSONObject response = invoke(request);
-        JSONObject mobileUsers = response.getJSONObject("mobile_users");
+        JSONArray userList = response.getJSONArray("user_list");
+        if (userList.size() > 0) {
+            JSONObject userInfo = userList.getJSONObject(0);
 
-        if (mobileUsers.containsKey(mobile)) {
-            return mobileUsers.getJSONArray(mobile).getJSONObject(0).getString("open_id");
+            return userInfo.getString("user_id");
         }
 
         return null;

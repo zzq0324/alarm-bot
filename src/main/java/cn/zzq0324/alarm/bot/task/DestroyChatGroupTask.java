@@ -37,7 +37,7 @@ public class DestroyChatGroupTask extends AbstractTask {
         taskService.update(task);
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(initialDelay = 60000, fixedRate = 60000)
     @Override
     public void execute() {
         super.execute();

@@ -24,7 +24,7 @@ public class LocalStorage implements StorageExt {
     @Override
     public String upload(byte[] data, String fileName) {
         try {
-            // 格式如：/resource/xxx.png
+            // 格式如：/files/xxx.png
             String suffix = ResourceHandlerConfiguration.RESOURCE_URL_PREFIX + "/" + fileName;
             File file = new File(alarmBotProperties.getResourceDownloadFolder() + suffix);
 
