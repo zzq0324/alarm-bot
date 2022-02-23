@@ -30,7 +30,7 @@ public class PendingEventNotifyTask {
     @Autowired
     private AlarmBotProperties alarmBotProperties;
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "${alarm-bot.pending-event-notify-cron}")
     public void execute() {
         List<Event> eventList = eventService.getPendingEventList();
 
