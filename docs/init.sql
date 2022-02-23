@@ -44,7 +44,8 @@ create TABLE if not exists `event` (
   PRIMARY KEY (`id`),
   KEY `idx_project_ct` (`project_id`,`create_time`) USING BTREE,
   KEY `idx_message_id` (`third_message_id`) USING BTREE,
-  KEY `idx_chat_group_id` (`chat_group_id`) USING BTREE
+  KEY `idx_chat_group_id` (`chat_group_id`) USING BTREE,
+  KEY `idx_status_ct` (`event_status`,`create_time`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 任务表

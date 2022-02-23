@@ -9,8 +9,10 @@ import cn.zzq0324.alarm.bot.entity.Message;
 import cn.zzq0324.alarm.bot.entity.Project;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.extension.platform.impl.lark.parser.LarkMessageParserExt;
+import cn.zzq0324.alarm.bot.service.ProjectService;
 import cn.zzq0324.alarm.bot.spi.Extension;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
+import cn.zzq0324.alarm.bot.util.DateUtils;
 import cn.zzq0324.alarm.bot.util.FileUtils;
 import cn.zzq0324.alarm.bot.vo.CallbackData;
 import cn.zzq0324.alarm.bot.vo.IMMessage;
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +49,9 @@ public class Lark implements PlatformExt {
     @Autowired
     private AlarmBotProperties alarmBotProperties;
 
+    @Autowired
+    private ProjectService projectService;
+
     @Override
     public void replyText(String messageId, String text) {
         larkHelper.replyText(messageId, null, text);
@@ -56,6 +62,20 @@ public class Lark implements PlatformExt {
         JSONObject data = (JSONObject)JSONObject.toJSON(event);
         data.put("projectName", project.getName());
         String cardContent = FileUtils.getFileContent("/lark/event-info.json", data, true);
+
+        larkHelper.send(event.getChatGroupId(), LarkConstants.MESSAGE_TYPE_INTERACTIVE, cardContent);
+    }
+
+    @Override
+    public void pendingTaskNotify(Event event) {
+        JSONObject data = (JSONObject)JSONObject.toJSON(event);
+        String durationText = DateUtils.getDiffText(event.getCreateTime(), new Date());
+        data.put("durationText", durationText);
+
+        Project project = projectService.getById(event.getProjectId());
+        data.put("projectName", project.getName());
+
+        String cardContent = FileUtils.getFileContent("/lark/pending-event-notify.json", data, true);
 
         larkHelper.send(event.getChatGroupId(), LarkConstants.MESSAGE_TYPE_INTERACTIVE, cardContent);
     }

@@ -74,4 +74,9 @@ public class AlarmBotProperties {
      * 项目成员缺失
      */
     private String projectMemberMissing;
+
+    /**
+     * 未完成的事件通知定时任务
+     */
+    private String pendingEventNotifyCron;
 }

@@ -32,6 +32,11 @@ public class DingTalk implements PlatformExt {
     }
 
     @Override
+    public void pendingTaskNotify(Event event) {
+        
+    }
+
+    @Override
     public IMMessage parseIMMessage(CallbackData callbackData) {
         return null;
     }

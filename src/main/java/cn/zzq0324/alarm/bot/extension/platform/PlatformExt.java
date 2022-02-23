@@ -30,6 +30,11 @@ public interface PlatformExt {
     void pushEvent(Event event, Project project);
 
     /**
+     * 未处理完的任务提醒
+     */
+    void pendingTaskNotify(Event event);
+
+    /**
      * 解析消息
      */
     IMMessage parseIMMessage(CallbackData callbackData);

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * description: EventService <br>
@@ -45,5 +46,12 @@ public class EventService {
         // 设置状态
         event.setEventStatus(Status.FINISH);
         eventDao.updateById(event);
+    }
+
+    public List<Event> getPendingEventList() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("event_status", Status.CREATED.getValue());
+
+        return eventDao.selectList(queryWrapper);
     }
 }

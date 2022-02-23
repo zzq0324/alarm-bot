@@ -24,4 +24,8 @@ public class ProjectService {
 
         return projectDao.selectOne(queryWrapper);
     }
+
+    public Project getById(long id) {
+        return projectDao.selectById(id);
+    }
 }
