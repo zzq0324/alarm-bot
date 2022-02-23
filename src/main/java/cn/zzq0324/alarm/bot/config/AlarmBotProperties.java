@@ -79,4 +79,6 @@ public class AlarmBotProperties {
      * 未完成的事件通知定时任务
      */
     private String pendingEventNotifyCron;
+
+    private String alarmGroupReplyPendingTask;
 }

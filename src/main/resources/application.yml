@@ -60,3 +60,4 @@ alarm-bot:
   url-prefix: 'http://localhost:8080'
   # 找不到项目成员
   project-member-missing: '项目未配置对应的人员，当前事件不会拉群，请及时跟进处理并做好配置工作！'
+  alarm-group-reply-pending-task: '当前告警超过%s，已在告警群提醒相关同学跟进。'
