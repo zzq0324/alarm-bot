@@ -7,6 +7,7 @@ import cn.zzq0324.alarm.bot.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
  * version: 1.0 <br>
  */
 @Service
+@Slf4j
 public class MemberService {
 
     @Autowired
@@ -53,7 +55,9 @@ public class MemberService {
         String mobile = member.getMobile();
         memberPlatformInfo = ExtensionLoader.getDefaultExtension(PlatformExt.class).getMemberInfo(mobile);
         if (memberPlatformInfo == null) {
-            throw new RuntimeException("根据手机号" + mobile + "查找不到对应的三方账号信息");
+            log.warn("can't find third platform account by mobile: {}", mobile);
+
+            return null;
         }
 
         memberPlatformInfo.setMemberId(member.getId());

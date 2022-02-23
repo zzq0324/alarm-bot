@@ -20,6 +20,7 @@ import cn.zzq0324.alarm.bot.spi.ExtensionLoader;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -82,8 +83,7 @@ public class CreateEvent implements Command<CreateEventContext> {
 
         // 找不到项目或者项目成员未配置
         if (project == null || StringUtils.isEmpty(project.getMemberIds())) {
-            ExtensionLoader.getDefaultExtension(PlatformExt.class)
-                .replyText(message.getThirdMessageId(), alarmBotProperties.getProjectMemberMissing());
+            sendProjectMemberMissingTip(message);
 
             return;
         }
@@ -98,6 +98,11 @@ public class CreateEvent implements Command<CreateEventContext> {
 
         // 查找项目对应的人，用于接收告警信息
         List<String> thirdPlatformOpenIdList = getMemberOpenIdList(project);
+        if (CollectionUtils.isEmpty(thirdPlatformOpenIdList)) {
+            sendProjectMemberMissingTip(message);
+
+            return;
+        }
 
         // 创建群聊并拉人入群
         String chatGroupId = createChatGroup(project, thirdPlatformOpenIdList);
@@ -111,6 +116,11 @@ public class CreateEvent implements Command<CreateEventContext> {
         //  回复群消息，告知拉群处理
         ExtensionLoader.getDefaultExtension(PlatformExt.class)
             .replyText(message.getThirdMessageId(), alarmBotProperties.getReplyAlarm());
+    }
+
+    private void sendProjectMemberMissingTip(Message message) {
+        ExtensionLoader.getDefaultExtension(PlatformExt.class)
+            .replyText(message.getThirdMessageId(), alarmBotProperties.getProjectMemberMissing());
     }
 
     private String createChatGroup(Project project, List<String> thirdPlatformOpenIdList) {
@@ -147,7 +157,9 @@ public class CreateEvent implements Command<CreateEventContext> {
             Member member = memberService.get(Long.parseLong(memberIdStr));
             MemberPlatformInfo memberPlatformInfo = memberService.getMemberPlatformInfo(member, true);
 
-            thirdPlatformOpenIdList.add(memberPlatformInfo.getOpenId());
+            if (memberPlatformInfo != null) {
+                thirdPlatformOpenIdList.add(memberPlatformInfo.getOpenId());
+            }
         }
 
         return thirdPlatformOpenIdList;
