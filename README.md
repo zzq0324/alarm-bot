@@ -8,6 +8,10 @@
 
 > Alarm Bot中文名"告警机器人"，通过三方平台的开放能力，完成告警 -> 创建群 -> 拉人进群 -> 解决告警的闭环。针对未及时处理的告警提醒相关人员及时跟进处理，确保不会遗漏。
 
+## 演示视频
+
+<iframe width="100%" height="400" src="https://user-images.githubusercontent.com/24889976/155529943-9ef42a42-42ac-46a6-9de2-893e21ae3d88.mp4" frameborder="0" allowfullscreen></iframe>
+
 ## 技术设计
 
 ### 项目结构
