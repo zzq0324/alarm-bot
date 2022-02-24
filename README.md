@@ -1,8 +1,12 @@
 # Alarm Bot
 
-> Alarm Bot中文名"告警机器人"，通过三方平台的开放能力，完成告警 -> 创建群 -> 拉人进群 -> 解决告警的闭环。针对未及时处理的告警提醒相关人员及时跟进处理，确保不会遗漏。
+![Java](https://img.shields.io/badge/language-java-green.svg)
+![Star](https://img.shields.io/github/stars/zzq0324/alarm-bot)
+![Fork](https://img.shields.io/github/forks/zzq0324/alarm-bot)
+![Issues](https://img.shields.io/github/issues/zzq0324/alarm-bot)
+![Licence](https://img.shields.io/github/license/zzq0324/alarm-bot)
 
-项目结构如下：
+> Alarm Bot中文名"告警机器人"，通过三方平台的开放能力，完成告警 -> 创建群 -> 拉人进群 -> 解决告警的闭环。针对未及时处理的告警提醒相关人员及时跟进处理，确保不会遗漏。
 
 ## 技术设计
 
