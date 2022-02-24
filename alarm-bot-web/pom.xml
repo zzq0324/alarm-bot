@@ -81,7 +81,7 @@
                     <programs>
                         <program>
                             <!-- 启动类 -->
-                            <mainClass>AlarmBotApplication</mainClass>
+                            <mainClass>cn.zzq0324.alarm.bot.web.Start</mainClass>
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Xmx512m</extraArgument>

@@ -4,7 +4,6 @@ import cn.zzq0324.alarm.bot.core.constant.CallbackType;
 import cn.zzq0324.alarm.bot.core.constant.CommandConstants;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.extension.cmd.Command;
-import cn.zzq0324.alarm.bot.core.extension.cmd.CommandExecutor;
 import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
 import cn.zzq0324.alarm.bot.core.extension.cmd.context.CreateEventContext;
 import cn.zzq0324.alarm.bot.core.extension.cmd.context.HelpContext;
@@ -31,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public abstract class AbstractCallback {
 
-    @Autowired
-    private CommandExecutor commandExecutor;
     @Autowired
     private MessageService messageService;
     @Autowired

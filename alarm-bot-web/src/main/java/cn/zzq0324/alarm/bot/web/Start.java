@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.web;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -10,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
-@org.springframework.boot.autoconfigure.SpringBootApplication
+@SpringBootApplication(scanBasePackages = "cn.zzq0324")
 @EnableConfigurationProperties
 @EnableScheduling
 public class Start {
