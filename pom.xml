@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.zzq0324</groupId>
-    <artifactId>alarm-bot</artifactId>
-    <packaging>jar</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>alarm-bot-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>${revision}</version>
     <name>Alarm Bot</name>
 
     <parent>
@@ -18,182 +18,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.test.skip>true</maven.test.skip>
-        <larksuite-oapi.version>1.0.18-rc4</larksuite-oapi.version>
-        <dingtalk.version>2.0.0</dingtalk.version>
-        <fastjson.version>1.2.79</fastjson.version>
-        <mybatis-plus.version>3.3.2</mybatis-plus.version>
-        <lombok.version>1.18.10</lombok.version>
-        <mysql-connector.version>8.0.20</mysql-connector.version>
+        <revision>1.0.0-SNAPSHOT</revision>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>${fastjson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.larksuite.oapi</groupId>
-            <artifactId>larksuite-oapi</artifactId>
-            <version>${larksuite-oapi.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>alibaba-dingtalk-service-sdk</artifactId>
-            <version>${dingtalk.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <finalName>alarm-bot</finalName>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>src/main/resources</directory>
-            </testResource>
-        </testResources>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>appassembler-maven-plugin</artifactId>
-                <version>2.0.0</version>
-                <configuration>
-                    <!-- 生成linux, windows两种平台的执行脚本 -->
-                    <platforms>
-                        <platform>unix</platform>
-                        <platform>windows</platform>
-                    </platforms>
-
-                    <binFileExtensions>
-                        <unix>.sh</unix>
-                        <windows>.bat</windows>
-                    </binFileExtensions>
-
-                    <!-- 包存放的根目录 -->
-                    <assembleDirectory>${project.build.directory}/${project.artifactId}</assembleDirectory>
-                    <!-- 打包的jar，以及maven依赖的jar存放目录 -->
-                    <repositoryName>lib</repositoryName>
-                    <!-- lib目录中jar的存放规则，默认是${groupId}/${artifactId}的目录格式，flat表示直接把jar放到lib目录 -->
-                    <!-- 可执行脚本的存放目录 -->
-                    <binFolder>bin</binFolder>
-                    <!-- 配置文件的存放目录 -->
-                    <configurationDirectory>conf</configurationDirectory>
-                    <!-- 拷贝配置文件到上面的目录中 -->
-                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
-                    <!-- 从哪里拷贝配置文件 (默认src/main/config) -->
-                    <configurationSourceDirectory>src/main/resources</configurationSourceDirectory>
-                    <repositoryLayout>flat</repositoryLayout>
-                    <encoding>UTF-8</encoding>
-                    <logsDirectory>logs</logsDirectory>
-                    <tempDirectory>tmp</tempDirectory>
-                    <programs>
-                        <program>
-                            <!-- 启动类 -->
-                            <mainClass>cn.zzq0324.alarm.bot.AlarmBotApplication</mainClass>
-                            <jvmSettings>
-                                <extraArguments>
-                                    <extraArgument>-Xmx512m</extraArgument>
-                                    <extraArgument>-Xms256m</extraArgument>
-                                    <extraArgument>-XX:+HeapDumpOnOutOfMemoryError</extraArgument>
-                                    <extraArgument>-XX:HeapDumpPath=@BASEDIR@/logs/java_heapdump.hprof</extraArgument>
-                                </extraArguments>
-                            </jvmSettings>
-                        </program>
-                    </programs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>assemble</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>maven-assembly</id>
-                        <!--绑定到maven操作类型上-->
-                        <phase>package</phase>
-                        <!--运行一次-->
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <!-- zip包文件名 -->
-                            <finalName>${project.artifactId}-${project.version}</finalName>
-                            <!-- zip包文件名不加上assembly.xml中配置的id属性值 -->
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <!--具体的配置文件-->
-                                <descriptor>src/main/assembly/assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>alarm-bot-core</module>
+        <module>alarm-bot-web</module>
+        <module>alarm-bot-backend</module>
+    </modules>
 </project>

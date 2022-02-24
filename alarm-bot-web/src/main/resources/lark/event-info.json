@@ -1,0 +1,52 @@
+{
+  "config": {
+    "wide_screen_mode": true
+  },
+  "elements": [
+    {
+      "fields": [
+        {
+          "is_short": true,
+          "text": {
+            "content": "**🔴 告警服务：**\n${projectName}",
+            "tag": "lark_md"
+          }
+        },
+        {
+          "is_short": true,
+          "text": {
+            "content": "**🕐 告警时间：**\n${createTime}",
+            "tag": "lark_md"
+          }
+        }
+      ],
+      "tag": "div"
+    },
+    {
+      "tag": "div",
+      "text": {
+        "content": "**🛎 详细信息：** \n\n${detail}",
+        "tag": "lark_md"
+      }
+    },
+    {
+      "tag": "hr"
+    },
+    {
+      "tag": "note",
+      "elements": [
+        {
+          "tag": "plain_text",
+          "content": "✅  请及时跟进处理，以免影响业务。"
+        }
+      ]
+    }
+  ],
+  "header": {
+    "template": "red",
+    "title": {
+      "content": "告警信息",
+      "tag": "plain_text"
+    }
+  }
+}
