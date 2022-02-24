@@ -1,14 +1,26 @@
 # Alarm Bot
 
-## 项目介绍
-
 > Alarm Bot中文名"告警机器人"，通过三方平台的开放能力，完成告警 -> 创建群 -> 拉人进群 -> 解决告警的闭环。针对未及时处理的告警提醒相关人员及时跟进处理，确保不会遗漏。
 
 项目结构如下：
 
 ## 技术设计
 
-<img src='docs/流程图.jpg' width='375'></img>
+### 项目结构
+
+```
+alarm-bot-parent
+|
+|__ alarm-bot-core（核心代码，包含SPI、Extension和dao、service类）
+|
+|__ alarm-bot-web（接收三方平台的事件回调以及相关定时任务）
+|
+|__ alarm-bot-backend（后台配置界面相关接口和前端页面）
+```
+
+### 流程图
+
+<img src='docs/流程图.jpg' width='600'></img>
 
 ## 未来计划
 

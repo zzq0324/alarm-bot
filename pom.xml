@@ -27,4 +27,25 @@
         <module>alarm-bot-web</module>
         <module>alarm-bot-backend</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.qunix</groupId>
+                <artifactId>structure-maven-plugin</artifactId>
+                <version>0.0.1</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>
+                                printModules
+                            </goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
