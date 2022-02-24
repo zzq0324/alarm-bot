@@ -4,7 +4,8 @@ create TABLE if not exists `project` (
   `name` varchar(200) NOT NULL COMMENT '项目名称，例如: service-order',
   `member_ids` varchar(1000) NOT NULL COMMENT '项目成员id列表',
   `description` varchar(512) NOT NULL COMMENT '项目描述',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_name` (`name`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 告警接收的成员表

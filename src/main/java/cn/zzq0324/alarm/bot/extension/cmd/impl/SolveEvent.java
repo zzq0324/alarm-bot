@@ -89,7 +89,7 @@ public class SolveEvent implements Command<SolveEventContext> {
         taskService.addTask(TaskType.DESTROY_CHAT_GROUP, triggerTime, JSONObject.toJSONString(event));
 
         // 回复原来的群聊消息，告知告警已解除以及处理时效
-        replyAlarmGroupSolved(event);
+        replyAlarmGroupSolved(event, summary);
 
         // 更新事件状态并增加日志
         event.setSummary(summary);
@@ -99,9 +99,10 @@ public class SolveEvent implements Command<SolveEventContext> {
     /**
      * 回复原来的群聊消息告警已处理
      */
-    private void replyAlarmGroupSolved(Event event) {
+    private void replyAlarmGroupSolved(Event event, String summary) {
         String replyMessage = String.format(alarmBotProperties.getReplySolvedToChatGroup(),
-            DateUtils.getDiffText(event.getCreateTime(), event.getFinishTime()));
+            DateUtils.getDiffText(event.getCreateTime(), event.getFinishTime()), summary);
+        
         ExtensionLoader.getDefaultExtension(PlatformExt.class).replyText(event.getThirdMessageId(), replyMessage);
     }
 
