@@ -1,10 +1,10 @@
 package cn.zzq0324.alarm.bot.core.spi;
 
+import cn.zzq0324.alarm.bot.core.spi.extension.DemoExtension;
 import cn.zzq0324.alarm.bot.core.spi.extension.ExtensionImpl1;
 import cn.zzq0324.alarm.bot.core.spi.extension.ExtensionImpl2;
-import cn.zzq0324.alarm.bot.core.spi.extension2.ExtensionImpl3;
-import cn.zzq0324.alarm.bot.core.spi.extension.DemoExtension;
 import cn.zzq0324.alarm.bot.core.spi.extension2.DemoExtension2;
+import cn.zzq0324.alarm.bot.core.spi.extension2.ExtensionImpl3;
 import cn.zzq0324.alarm.bot.core.spi.extension3.DemoExtension3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
