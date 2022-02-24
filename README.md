@@ -8,7 +8,7 @@
 
 ## 技术设计
 
-![流程图](docs/流程图.jpg)
+<img src='docs/流程图.jpg' width='375'></img>
 
 ## 未来计划
 
