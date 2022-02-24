@@ -37,8 +37,6 @@ public abstract class AbstractTask {
     public void execute() {
         try {
             List<Task> taskList = taskService.getUnFinishedTaskList(getTaskType());
-            log.info("taskType: {}, unfinished task size: {}", getTaskType(), taskList.size());
-
             taskList.stream().forEach(task -> {
                 try {
                     run(task);
