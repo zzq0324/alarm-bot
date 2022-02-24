@@ -10,7 +10,8 @@
 
 ## 演示视频
 
-<iframe width="100%" height="400" src="https://user-images.githubusercontent.com/24889976/155529943-9ef42a42-42ac-46a6-9de2-893e21ae3d88.mp4" frameborder="0" allowfullscreen></iframe>
+https://user-images.githubusercontent.com/24889976/155530740-da21479d-4a33-46b0-8450-2b65ede2a69a.mp4
+
 
 ## 技术设计
 
