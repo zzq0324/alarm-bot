@@ -9,21 +9,20 @@ import cn.zzq0324.alarm.bot.core.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.extension.cmd.Command;
+import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
+import cn.zzq0324.alarm.bot.core.extension.cmd.context.CreateEventContext;
+import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.core.service.EventService;
 import cn.zzq0324.alarm.bot.core.service.MemberService;
 import cn.zzq0324.alarm.bot.core.service.ProjectService;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
-import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
-import cn.zzq0324.alarm.bot.core.extension.cmd.context.CreateEventContext;
-import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,11 +53,6 @@ public class CreateEvent implements Command<CreateEventContext> {
     private EventService eventService;
 
     private Pattern pattern = null;
-
-    @PostConstruct
-    public void initPattern() {
-        pattern = Pattern.compile(alarmBotProperties.getProjectNameRegExp());
-    }
 
     @Override
     public CommandContext matchCommand(Message message) {
@@ -169,6 +163,9 @@ public class CreateEvent implements Command<CreateEventContext> {
      * 从消息体中解析出serviceId
      */
     private String extractProjectName(String messageContent) {
+        if (pattern == null) {
+            pattern = Pattern.compile(alarmBotProperties.getProjectNameRegExp());
+        }
         Matcher matcher = pattern.matcher(messageContent);
         if (matcher.find()) {
             return matcher.group(1);
