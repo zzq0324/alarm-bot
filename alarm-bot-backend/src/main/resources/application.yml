@@ -7,7 +7,7 @@ spring:
   datasource:
     username: bot
     password: Test!@#$1234
-    url: jdbc:mysql://localhost:3306/alarm-bot?characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false
+    url: jdbc:mysql://182.254.139.171:3306/alarm-bot?characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     # hikari数据源特性配置
     hikari:

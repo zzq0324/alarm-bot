@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.core.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -44,5 +45,6 @@ public class Member {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd mm:HH:ss", timezone = "GMT+8")
     private Date createTime;
 }

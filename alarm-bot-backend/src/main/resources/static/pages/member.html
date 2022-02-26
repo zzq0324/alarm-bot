@@ -1,30 +1,51 @@
-<table id="dg" title="Custom DataGrid Pager" style="width:100%;height:100%"
-    data-options="rownumbers:true,singleSelect:true,pagination:true,url:'datagrid_data1.json',method:'get',toolbar: '#memberTb'">
-    <thead>
-        <tr>
-            <th data-options="field:'itemid',width:80">Item ID22</th>
-            <th data-options="field:'productid',width:100">Product</th>
-            <th data-options="field:'listprice',width:80,align:'right'">List Price</th>
-            <th data-options="field:'unitcost',width:80,align:'right'">Unit Cost</th>
-            <th data-options="field:'attr1',width:240">Attribute</th>
-            <th data-options="field:'status',width:60,align:'center'">Status</th>
-        </tr>
-    </thead>
-</table>
-<div id="memberTb" style="height:auto">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true"
-        onclick="append()">Append</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true"
-        onclick="removeit()">Remove</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true"
-        onclick="acceptit()">Accept</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true"
-        onclick="reject()">Reject</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true"
-        onclick="getChanges()">GetChanges</a>
+<div class="easyui-layout" data-options="fit:true">
+    <!-- begin search bar -->
+    <div data-options="region:'north'" style="height:80px;padding: 10px;" class="easyui-panel" title="搜索条件">
+        <label>姓名：</label><input class="easyui-textbox" id="searchMemberName" style="width:120px">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>手机号：</label><input class="easyui-textbox" id="searchMemberMobile" style="width:120px">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="searchMember()">开始查询</a>
+    </div>
+    <!-- end search bar -->
+
+    <!-- begin data grid -->
+    <div data-options="region:'center',title:'成员列表'">
+        <table id="memberDataGrid" class="easyui-datagrid" style="width:100%;height:100%"
+               data-options="rownumbers:true,singleSelect:true,pagination:true,url:'/member/list',method:'get',toolbar:memberToolBar,fit:true,fitColumns:true">
+            <thead>
+            <tr>
+                <th data-options="field:'id',width:40">成员ID</th>
+                <th data-options="field:'name',width:80">姓名</th>
+                <th data-options="field:'mobile',width:80">手机号</th>
+                <th data-options="field:'openId',width:160">OpenID</th>
+                <th data-options="field:'unionId',width:160">UnionID</th>
+                <th data-options="field:'createTime',width:120">创建时间</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- end data grid -->
 </div>
 <script type="text/javascript">
-    $(function () {
-        var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
-    })
+    var memberToolBar = [{
+        text: '添加',
+        iconCls: 'icon-add',
+        handler: function () { alert('add') }
+    }, {
+        text: '修改',
+        iconCls: 'icon-edit',
+        handler: function () { alert('cut') }
+    }, '-', {
+        text: '删除',
+        iconCls: 'icon-remove',
+        handler: function () { alert('save') }
+    }];
+
+    function searchMember(){
+        $('#memberDataGrid').datagrid('load', {
+            name: $('#searchMemberName').textbox('getValue'),
+            mobile: $('#searchMemberMobile').textbox('getValue')
+        });
+    }
 </script>

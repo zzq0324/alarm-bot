@@ -6,6 +6,7 @@ import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.core.vo.MemberThirdAuthInfo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,20 @@ public class MemberService {
         setMemberThirdAuthInfo(member);
 
         memberDao.insert(member);
+    }
+
+    public Page<Member> listPage(int currentPage, int size, String name, String mobile) {
+        Page page = new Page(currentPage, size);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if (StringUtils.hasLength(name)) {
+            queryWrapper.like("name", name);
+        }
+
+        if (StringUtils.hasLength(mobile)) {
+            queryWrapper.eq("mobile", mobile);
+        }
+
+        return memberDao.selectPage(page, queryWrapper);
     }
 
     /**
