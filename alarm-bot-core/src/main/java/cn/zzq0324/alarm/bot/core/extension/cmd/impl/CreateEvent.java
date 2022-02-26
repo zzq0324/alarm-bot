@@ -5,7 +5,6 @@ import cn.zzq0324.alarm.bot.core.constant.CommandConstants;
 import cn.zzq0324.alarm.bot.core.constant.Status;
 import cn.zzq0324.alarm.bot.core.entity.Event;
 import cn.zzq0324.alarm.bot.core.entity.Member;
-import cn.zzq0324.alarm.bot.core.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.extension.cmd.Command;
@@ -145,18 +144,17 @@ public class CreateEvent implements Command<CreateEventContext> {
 
     private List<String> getMemberOpenIdList(Project project) {
         // 查询对应的人
-        List<String> thirdPlatformOpenIdList = new ArrayList<>();
+        List<String> thirdOpenIdList = new ArrayList<>();
         Set<String> memberIdSet = StringUtils.commaDelimitedListToSet(project.getMemberIds());
         for (String memberIdStr : memberIdSet) {
             Member member = memberService.get(Long.parseLong(memberIdStr));
-            MemberPlatformInfo memberPlatformInfo = memberService.getMemberPlatformInfo(member, true);
 
-            if (memberPlatformInfo != null) {
-                thirdPlatformOpenIdList.add(memberPlatformInfo.getOpenId());
+            if (member != null) {
+                thirdOpenIdList.add(member.getOpenId());
             }
         }
 
-        return thirdPlatformOpenIdList;
+        return thirdOpenIdList;
     }
 
     /**

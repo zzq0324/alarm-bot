@@ -32,6 +32,16 @@ public class Member {
     private String mobile;
 
     /**
+     * 三方平台的openId
+     */
+    private String openId;
+
+    /**
+     * 三方平台的unionId
+     */
+    private String unionId;
+
+    /**
      * 创建时间
      */
     private Date createTime;

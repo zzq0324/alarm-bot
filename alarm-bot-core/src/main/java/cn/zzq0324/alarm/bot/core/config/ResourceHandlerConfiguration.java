@@ -31,7 +31,7 @@ public class ResourceHandlerConfiguration implements WebMvcConfigurer {
         // 如果文件存储在本地，则开启映射
         if (StringUtils.hasLength(alarmBotProperties.getResourceDownloadFolder())) {
             registry.addResourceHandler(RESOURCE_URL_PREFIX + "/**").addResourceLocations(
-                "file:" + alarmBotProperties.getResourceDownloadFolder() + RESOURCE_URL_PREFIX + "/");
+                "file:" + alarmBotProperties.getResourceDownloadFolder() + RESOURCE_URL_PREFIX + "/").setCachePeriod(0);
         }
     }
 }

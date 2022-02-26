@@ -1,12 +1,12 @@
 package cn.zzq0324.alarm.bot.core.extension.platform;
 
 import cn.zzq0324.alarm.bot.core.entity.Event;
-import cn.zzq0324.alarm.bot.core.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.spi.SPI;
 import cn.zzq0324.alarm.bot.core.vo.CallbackData;
 import cn.zzq0324.alarm.bot.core.vo.IMMessage;
+import cn.zzq0324.alarm.bot.core.vo.MemberThirdAuthInfo;
 
 import java.util.List;
 
@@ -67,5 +67,5 @@ public interface PlatformExt {
     /**
      * 根据手机号查询成员三方信息
      */
-    MemberPlatformInfo getMemberInfo(String mobile);
+    MemberThirdAuthInfo getMemberInfo(String mobile);
 }

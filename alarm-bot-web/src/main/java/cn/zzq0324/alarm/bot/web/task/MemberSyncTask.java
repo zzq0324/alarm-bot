@@ -1,7 +1,6 @@
 package cn.zzq0324.alarm.bot.web.task;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +13,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MemberSyncTask {
 
-    @Scheduled(cron = "")
     public void execute() {
         try {
-            // 获取全部员工
+            // 检测配置成员的状态，有离职的标记，同时检测起关联负责的项目，如果有负责项目提醒告诉交接
         } catch (Exception e) {
             log.error("sync member error", e);
         }

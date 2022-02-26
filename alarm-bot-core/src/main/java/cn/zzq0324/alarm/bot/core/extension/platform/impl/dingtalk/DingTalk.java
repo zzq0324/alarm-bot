@@ -2,13 +2,13 @@ package cn.zzq0324.alarm.bot.core.extension.platform.impl.dingtalk;
 
 import cn.zzq0324.alarm.bot.core.constant.PlatformType;
 import cn.zzq0324.alarm.bot.core.entity.Event;
-import cn.zzq0324.alarm.bot.core.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.vo.CallbackData;
 import cn.zzq0324.alarm.bot.core.vo.IMMessage;
+import cn.zzq0324.alarm.bot.core.vo.MemberThirdAuthInfo;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class DingTalk implements PlatformExt {
     }
 
     @Override
-    public MemberPlatformInfo getMemberInfo(String mobile) {
+    public MemberThirdAuthInfo getMemberInfo(String mobile) {
         return null;
     }
 }

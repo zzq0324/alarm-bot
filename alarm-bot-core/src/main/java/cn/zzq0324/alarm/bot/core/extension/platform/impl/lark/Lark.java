@@ -4,10 +4,10 @@ import cn.zzq0324.alarm.bot.core.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.core.constant.LarkConstants;
 import cn.zzq0324.alarm.bot.core.constant.PlatformType;
 import cn.zzq0324.alarm.bot.core.entity.Event;
-import cn.zzq0324.alarm.bot.core.entity.MemberPlatformInfo;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
+import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.LarkMessageParserExt;
 import cn.zzq0324.alarm.bot.core.service.ProjectService;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
@@ -15,7 +15,7 @@ import cn.zzq0324.alarm.bot.core.util.DateUtils;
 import cn.zzq0324.alarm.bot.core.util.FileUtils;
 import cn.zzq0324.alarm.bot.core.vo.CallbackData;
 import cn.zzq0324.alarm.bot.core.vo.IMMessage;
-import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.LarkMessageParserExt;
+import cn.zzq0324.alarm.bot.core.vo.MemberThirdAuthInfo;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.core.api.request.Request;
 import com.larksuite.oapi.core.api.request.RequestOptFn;
@@ -128,7 +128,7 @@ public class Lark implements PlatformExt {
     }
 
     @Override
-    public MemberPlatformInfo getMemberInfo(String mobile) {
+    public MemberThirdAuthInfo getMemberInfo(String mobile) {
         String openId = larkHelper.getOpenIdByMobile(mobile);
         if (StringUtils.isEmpty(openId)) {
             return null;
@@ -137,11 +137,6 @@ public class Lark implements PlatformExt {
         // 查询人员信息
         User user = larkHelper.getLarkUser(openId, "open_id");
 
-        MemberPlatformInfo memberPlatformInfo = new MemberPlatformInfo();
-        memberPlatformInfo.setOpenId(user.getOpenId());
-        memberPlatformInfo.setUnionId(user.getUnionId());
-        memberPlatformInfo.setName(user.getName());
-
-        return memberPlatformInfo;
+        return new MemberThirdAuthInfo(user.getName(), user.getOpenId(), user.getUnionId());
     }
 }
