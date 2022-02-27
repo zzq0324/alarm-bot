@@ -5,6 +5,12 @@
         &nbsp;&nbsp;&nbsp;&nbsp;
         <label>手机号：</label><input class="easyui-textbox" id="searchMemberMobile" style="width:120px">
         &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>状态：</label><select class="easyui-combobox" id="searchMemberStatus" style="width:120px;">
+            <option value="-1">全部</option>
+            <option value="0">禁用</option>
+            <option value="1">启用</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;
         <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="searchMember()">开始查询</a>
     </div>
     <!-- end search bar -->
@@ -82,7 +88,8 @@
     function searchMember() {
         $('#memberDataGrid').datagrid('load', {
             name: $('#searchMemberName').textbox('getValue'),
-            mobile: $('#searchMemberMobile').textbox('getValue')
+            mobile: $('#searchMemberMobile').textbox('getValue'),
+            status: $('#searchMemberStatus').combobox('getValue')
         });
     }
 
@@ -177,5 +184,4 @@
             searchMember();
         });
     }
-
 </script>

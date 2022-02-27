@@ -3,28 +3,28 @@ package cn.zzq0324.alarm.bot.backend.request;
 import lombok.Data;
 
 /**
- * description: MemberRequest <br>
- * date: 2022/2/26 10:13 下午 <br>
+ * description: ProjectRequest <br>
+ * date: 2022/2/27 7:15 下午 <br>
  * author: zzq0324 <br>
  * version: 1.0 <br>
  */
 @Data
-public class MemberRequest extends PageRequest {
+public class ProjectRequest extends PageRequest {
 
     public static final int ALL = -1;
 
     /**
-     * 姓名
+     * 项目名称
      */
     private String name;
 
     /**
-     * 手机号
+     * 所有者姓名
      */
-    private String mobile;
+    private String ownerName;
 
     /**
-     * 状态-1，默认全部
+     * 项目状态
      */
     private int status = ALL;
 }

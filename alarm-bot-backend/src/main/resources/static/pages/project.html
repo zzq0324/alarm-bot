@@ -1,0 +1,79 @@
+<div class="easyui-layout" data-options="fit:true">
+    <!-- begin search bar -->
+    <div data-options="region:'north'" style="height:80px;padding: 10px;" class="easyui-panel" title="搜索条件">
+        <label>项目名称：</label><input class="easyui-textbox" id="searchProjectName" style="width:120px">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>Owner姓名：</label><input class="easyui-textbox" id="searchProjectOwnerName" style="width:120px">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>状态：</label><select class="easyui-combobox" id="searchProjectStatus" style="width:120px;">
+            <option value="-1">全部</option>
+            <option value="0">下线</option>
+            <option value="1">正常</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="searchProject()">开始查询</a>
+    </div>
+    <!-- end search bar -->
+
+    <!-- begin data grid -->
+    <div data-options="region:'center',title:'项目列表'">
+        <table id="projectDataGrid" class="easyui-datagrid" style="width:100%;height:100%"
+            data-options="rownumbers:true,pagination:true,url:'/project/list',method:'get',toolbar:projectToolBar,fit:true,fitColumns:true">
+            <thead>
+                <tr>
+                    <th data-options="field:'ck',checkbox:true"></th>
+                    <th data-options="field:'id',width:40">项目ID</th>
+                    <th data-options="field:'name',width:80">项目名称</th>
+                    <th data-options="field:'ownerName',width:80">Owner</th>
+                    <th data-options="field:'memberName',width:240">成员</th>
+                    <th data-options="field:'status',width:40,formatter:projectStatusFormatter">状态</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- end data grid -->
+</div>
+
+<script type="text/javascript">
+    var projectToolBar = [{
+        text: '添加',
+        iconCls: 'icon-add',
+        handler: function () {
+            openAddMemberDialog();
+        }
+    }, '-', {
+        text: '修改',
+        iconCls: 'icon-edit',
+        handler: function () {
+            updateMemberStatus(1);
+        }
+    }, '-', {
+        text: '启用',
+        iconCls: 'icon-remove',
+        handler: function () {
+            updateMemberStatus(0);
+        }
+    }, '-', {
+        text: '禁用',
+        iconCls: 'icon-remove',
+        handler: function () {
+            updateMemberStatus(0);
+        }
+    }];
+
+    function searchProject() {
+        $('#projectDataGrid').datagrid('load', {
+            name: $('#searchProjectName').textbox('getValue'),
+            ownerName: $('#searchProjectOwnerName').textbox('getValue'),
+            status: $('#searchProjectStatus').combobox('getValue')
+        });
+    }
+
+    function projectStatusFormatter(value, row) {
+        if (value == 1) {
+            return '<span style="color:green">正常</span>';
+        }
+
+        return '<span style="color:red">下线</span>';
+    }
+</script>

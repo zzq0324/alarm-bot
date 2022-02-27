@@ -16,7 +16,6 @@ import java.util.Date;
 @Data
 public class Member {
 
-    // 禁用状态
     public static final int STATUS_DISABLE = 0;
 
     public static final int STATUS_NORMAL = 1;

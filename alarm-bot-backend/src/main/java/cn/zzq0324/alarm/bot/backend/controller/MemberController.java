@@ -31,7 +31,8 @@ public class MemberController {
     @GetMapping("/list")
     public Page list(MemberRequest request) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page page =
-            memberService.listPage(request.getPage(), request.getRows(), request.getName(), request.getMobile());
+            memberService.listPage(request.getPage(), request.getRows(), request.getName(), request.getMobile(),
+                request.getStatus());
 
         return new Page(page);
     }

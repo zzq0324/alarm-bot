@@ -47,7 +47,7 @@ public class MemberService {
         memberDao.insert(member);
     }
 
-    public Page<Member> listPage(int currentPage, int size, String name, String mobile) {
+    public Page<Member> listPage(int currentPage, int size, String name, String mobile, int status) {
         Page page = new Page(currentPage, size);
         QueryWrapper queryWrapper = new QueryWrapper();
         if (StringUtils.hasLength(name)) {
@@ -56,6 +56,10 @@ public class MemberService {
 
         if (StringUtils.hasLength(mobile)) {
             queryWrapper.eq("mobile", mobile);
+        }
+
+        if (status >= 0) {
+            queryWrapper.eq("status", status);
         }
 
         return memberDao.selectPage(page, queryWrapper);

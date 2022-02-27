@@ -13,6 +13,9 @@ import lombok.Data;
 @Data
 public class Project {
 
+    public static final int STATUS_NORMAL = 1;
+    public static final int STATUS_OFFLINE = 0;
+
     /**
      * 项目id
      */
@@ -25,9 +28,24 @@ public class Project {
     private String name;
 
     /**
+     * 所有者ID
+     */
+    private Long ownerId;
+
+    /**
+     * 所有者姓名
+     */
+    private String ownerName;
+
+    /**
      * 项目成员id列表
      */
     private String memberIds;
+
+    /**
+     * 项目状态
+     */
+    private int status;
 
     /**
      * 项目描述
