@@ -16,6 +16,11 @@ import java.util.Date;
 @Data
 public class Member {
 
+    // 禁用状态
+    public static final int STATUS_DISABLE = 0;
+
+    public static final int STATUS_NORMAL = 1;
+
     /**
      * 成员ID
      */
@@ -41,6 +46,11 @@ public class Member {
      * 三方平台的unionId
      */
     private String unionId;
+
+    /**
+     * 状态
+     */
+    private int status;
 
     /**
      * 创建时间

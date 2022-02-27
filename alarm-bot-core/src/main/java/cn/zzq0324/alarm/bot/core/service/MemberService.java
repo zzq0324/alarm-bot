@@ -40,6 +40,7 @@ public class MemberService {
         member = new Member();
         member.setMobile(mobile);
         member.setCreateTime(new Date());
+        member.setStatus(Member.STATUS_NORMAL);
 
         setMemberThirdAuthInfo(member);
 
@@ -63,7 +64,7 @@ public class MemberService {
     /**
      * 设置成员三方授权信息
      */
-    private void setMemberThirdAuthInfo(Member member) {
+    public void setMemberThirdAuthInfo(Member member) {
         // 为空重新从第三方调用获取信息，兼容你换IM的情况
         MemberThirdAuthInfo memberThirdAuthInfo =
             ExtensionLoader.getDefaultExtension(PlatformExt.class).getMemberInfo(member.getMobile());
@@ -108,5 +109,9 @@ public class MemberService {
         memberDao.updateById(member);
 
         return member;
+    }
+
+    public void update(Member member) {
+        memberDao.updateById(member);
     }
 }

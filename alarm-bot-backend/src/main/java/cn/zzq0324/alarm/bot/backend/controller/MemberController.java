@@ -2,11 +2,15 @@ package cn.zzq0324.alarm.bot.backend.controller;
 
 import cn.zzq0324.alarm.bot.backend.request.MemberRequest;
 import cn.zzq0324.alarm.bot.backend.response.Page;
+import cn.zzq0324.alarm.bot.core.entity.Member;
 import cn.zzq0324.alarm.bot.core.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Set;
 
 /**
  * description: BackendController <br>
@@ -30,5 +34,40 @@ public class MemberController {
             memberService.listPage(request.getPage(), request.getRows(), request.getName(), request.getMobile());
 
         return new Page(page);
+    }
+
+    @RequestMapping("/getMemberByMobile")
+    public Member getMemberByMobile(String mobile) {
+        Member member = memberService.getByMobile(mobile);
+        if (member == null) {
+            member = new Member();
+            member.setMobile(mobile);
+
+            memberService.setMemberThirdAuthInfo(member);
+        }
+
+        return member;
+    }
+
+    @RequestMapping("/add")
+    public void addMember(String mobile) {
+        Member member = memberService.getByMobile(mobile);
+        if (member != null) {
+            return;
+        }
+
+        memberService.addMember(mobile);
+    }
+
+    @RequestMapping("/updateStatus")
+    public void updateStatus(int status, String ids) {
+        Set<String> idSet = StringUtils.commaDelimitedListToSet(ids);
+
+        idSet.stream().forEach(idStr -> {
+            Member member = memberService.get(Long.parseLong(idStr));
+            member.setStatus(status);
+
+            memberService.update(member);
+        });
     }
 }

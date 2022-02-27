@@ -149,7 +149,8 @@ public class CreateEvent implements Command<CreateEventContext> {
         for (String memberIdStr : memberIdSet) {
             Member member = memberService.get(Long.parseLong(memberIdStr));
 
-            if (member != null) {
+            // 存在并且状态不为禁用
+            if (member != null && member.getStatus() != Member.STATUS_DISABLE) {
                 thirdOpenIdList.add(member.getOpenId());
             }
         }

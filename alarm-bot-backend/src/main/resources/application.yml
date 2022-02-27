@@ -24,3 +24,10 @@ spring:
       max-lifetime: 3000000
       #连接测试查询
       connection-test-query: select 1
+
+# lark config
+lark:
+  app-id: cli_a28b5ee9d8fad00d
+  app-secret: KmGWVPrHZT4fqtHiHRLmreps7mym6X0e
+  verify-token: EwqCX3PI73oETHorzP5B4czbzTTx28ZY
+  encrypt-key: Z4ic2Gi3iFDVvurIzakLnRUpKGExHyLX

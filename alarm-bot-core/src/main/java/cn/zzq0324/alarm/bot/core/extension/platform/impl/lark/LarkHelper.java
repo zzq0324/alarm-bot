@@ -201,7 +201,8 @@ public class LarkHelper {
             Request.newRequest("contact/v3/users/batch_get_id", "POST", AccessTokenType.Tenant, params,
                 new JSONObject());
 
-        JSONObject response = invoke(request);
+        JSONObject response = invoke(request, false);
+        log.info("aaaaa: {}", JSONObject.toJSONString(response));
         JSONArray userList = response.getJSONArray("user_list");
         if (userList.size() > 0) {
             JSONObject userInfo = userList.getJSONObject(0);
@@ -223,17 +224,23 @@ public class LarkHelper {
         }
     }
 
-    private <I, O> O invoke(Request<I, O> request) {
+    private <I, O> O invoke(Request<I, O> request, boolean isCheckHttpStatus) {
         try {
             request.getRequestOptFns().add(TIMEOUT_OPT);
             Response<O> response = Api.send(config, request);
 
-            checkHttpStatus(response);
+            if (isCheckHttpStatus) {
+                checkHttpStatus(response);
+            }
 
             return response.getData();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private <I, O> O invoke(Request<I, O> request) {
+        return invoke(request, true);
     }
 
     private void checkHttpStatus(Response response) {
