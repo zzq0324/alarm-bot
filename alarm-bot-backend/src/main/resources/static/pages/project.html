@@ -25,8 +25,9 @@
                     <th data-options="field:'id',width:40">项目ID</th>
                     <th data-options="field:'name',width:80">项目名称</th>
                     <th data-options="field:'ownerName',width:80">Owner</th>
-                    <th data-options="field:'memberName',width:240">成员</th>
+                    <th data-options="field:'memberNames',width:160">成员</th>
                     <th data-options="field:'status',width:40,formatter:projectStatusFormatter">状态</th>
+                    <th data-options="field:'description',width:160">项目描述</th>
                 </tr>
             </thead>
         </table>
@@ -34,30 +35,66 @@
     <!-- end data grid -->
 </div>
 
+<!-- member dialog start -->
+<div id="projectDialog" class="easyui-dialog" data-options="closed:true" style="width:400px;padding: 10px;">
+    <form id="projectForm" method="post">
+        <input type="hidden" id="projectIdInput" value="0" />
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" id="projectNameInput" label="项目名称:" data-options="labelWidth:60"
+                style="width:320px;" required />
+        </div>
+
+        <div style="margin-bottom:20px">
+            <select class="easyui-combobox" id="projectStatusInput" label="状态：" style="width:320px;"
+                data-options="labelWidth:60" required>
+                <option value="1">正常</option>
+                <option value="0">下线</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom:20px">
+            <input id="projectOwnerInput" class="easyui-combobox"
+                data-options="labelWidth:60,valueField: 'id',textField: 'name'" label="Owner：" style="width:320px;">
+        </div>
+
+        <div style="margin-bottom:20px">
+            <input id="projectMemberInput" class="easyui-tagbox"
+                data-options="labelWidth:60,valueField: 'id',textField: 'name',limitToList:true,hasDownArrow:true"
+                label="成员：" style="width:320px;">
+        </div>
+
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" id="projectDescInput" label="项目描述:" data-options="labelWidth:60"
+                multiline="true" style="width:320px;height: 100px;" />
+        </div>
+    </form>
+</div>
+<!-- member dialog end -->
+
 <script type="text/javascript">
+    function getSelectRow() {
+        var rows = $('#projectDataGrid').datagrid('getSelections');
+        if (rows.length > 1 || rows.length == 0) {
+            $.messager.alert('系统提醒', '请选择要操作的记录，仅支持单行操作', 'error');
+
+            return null;
+        }
+
+        return rows[0];
+    }
+
     var projectToolBar = [{
         text: '添加',
         iconCls: 'icon-add',
         handler: function () {
-            openAddMemberDialog();
+            openProjectDialog();
         }
     }, '-', {
         text: '修改',
         iconCls: 'icon-edit',
         handler: function () {
-            updateMemberStatus(1);
-        }
-    }, '-', {
-        text: '启用',
-        iconCls: 'icon-remove',
-        handler: function () {
-            updateMemberStatus(0);
-        }
-    }, '-', {
-        text: '禁用',
-        iconCls: 'icon-remove',
-        handler: function () {
-            updateMemberStatus(0);
+            var selectedRow = getSelectRow();
+            selectedRow && openProjectDialog(selectedRow);
         }
     }];
 
@@ -76,4 +113,80 @@
 
         return '<span style="color:red">下线</span>';
     }
+
+    function saveProject() {
+        var projectId = $('#projectIdInput').val();
+        var projectName = $('#projectNameInput').textbox('getValue');
+        var ownerId = $('#projectOwnerInput').combobox('getValue');
+        var memberIds = $('#projectMemberInput').tagbox('getValues').join(',');
+        var projectStatus = $('#projectStatusInput').combobox('getValue');
+
+        var param = {
+            name: projectName,
+            ownerId: ownerId,
+            status: projectStatus,
+            memberIds: memberIds,
+            description: $('#projectDescInput').textbox('getValue')
+        }
+
+        var url = '/project/add';
+        if (projectId) {
+            param.id = projectId;
+            url = '/project/update';
+        }
+
+        executeAjaxPost(url, param, function (data) {
+            if (data == 'duplicate') {
+                $.messager.alert('系统提醒', '项目名称重复', 'error');
+                return;
+            }
+
+            // 关闭弹窗
+            $('#projectDialog').dialog('close');
+
+            // 重新加载表格
+            searchProject();
+        });
+    }
+
+    function openProjectDialog(row) {
+        $('#projectForm').form('clear');
+
+        if (row) {
+            $('#projectIdInput').val(row.id);
+            $('#projectNameInput').textbox('setValue', row.name);
+            $('#projectOwnerInput').combobox('setValue', row.ownerId);
+            $('#projectStatusInput').combobox('setValue', row.status);
+            $('#projectMemberInput').tagbox('setValues', row.memberIds.split(','));
+            $('#projectDescInput').textbox('setValue', row.description);
+        }
+
+        $('#projectDialog').dialog({
+            closed: false,
+            modal: true,
+            title: row ? '修改项目' : '添加项目',
+            buttons: [{
+                text: '确定',
+                iconCls: 'icon-ok',
+                handler: saveProject
+            }, {
+                text: '取消',
+                iconCls: 'icon-cancel',
+                handler: function () {
+                    $('#projectDialog').dialog('close');
+                }
+            }]
+        });
+    }
+
+    // 初始化两个下拉框
+    $(function () {
+        // 获取成员列表，暂时全部获取
+        executeAjaxGet('/member/list?status=1&page=1&rows=100000', function (data) {
+            var memberList = data.rows;
+
+            $('#projectOwnerInput').combobox('loadData', memberList);
+            $('#projectMemberInput').tagbox('loadData', memberList);
+        });
+    });
 </script>

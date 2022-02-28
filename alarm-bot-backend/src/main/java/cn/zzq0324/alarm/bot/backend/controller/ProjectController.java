@@ -2,11 +2,19 @@ package cn.zzq0324.alarm.bot.backend.controller;
 
 import cn.zzq0324.alarm.bot.backend.request.ProjectRequest;
 import cn.zzq0324.alarm.bot.backend.response.Page;
+import cn.zzq0324.alarm.bot.core.entity.Member;
+import cn.zzq0324.alarm.bot.core.entity.Project;
+import cn.zzq0324.alarm.bot.core.service.MemberService;
 import cn.zzq0324.alarm.bot.core.service.ProjectService;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * description: ProjectController <br>
@@ -21,6 +29,9 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private MemberService memberService;
+
     /**
      * 获取成员分页
      */
@@ -30,6 +41,57 @@ public class ProjectController {
             projectService.listPage(request.getPage(), request.getRows(), request.getName(), request.getStatus(),
                 request.getOwnerName());
 
-        return new Page(page);
+        List<JSONObject> list = new ArrayList<>();
+        // 转化memberName方便前端展示
+        page.getRecords().stream().forEach(data -> {
+            JSONObject item = (JSONObject)JSONObject.toJSON(data);
+            String memberIds = item.getString("memberIds");
+            item.put("memberNames", getMemberName(memberIds));
+
+            list.add(item);
+        });
+
+        return new Page(page.getTotal(), list);
+    }
+
+    private String getMemberName(String memberIds) {
+        StringBuilder memberNameBuilder = new StringBuilder();
+        if (StringUtils.hasLength(memberIds)) {
+            String[] memberIdArr = StringUtils.commaDelimitedListToStringArray(memberIds);
+            for (String memberId : memberIdArr) {
+                Member member = memberService.get(Long.parseLong(memberId));
+                if (memberNameBuilder.length() > 0) {
+                    memberNameBuilder.append("，");
+                }
+                memberNameBuilder.append(member.getName());
+            }
+        }
+
+        return memberNameBuilder.toString();
+    }
+
+    @RequestMapping("/add")
+    public String add(Project project) {
+        // 检测项目是否存在
+        Project projectInDB = projectService.getByName(project.getName());
+        if (projectInDB != null) {
+            return "duplicate";
+        }
+
+        setOwnerName(project);
+        projectService.add(project);
+
+        return "success";
+    }
+
+    @RequestMapping("/update")
+    public void update(Project project) {
+        setOwnerName(project);
+        projectService.update(project);
+    }
+
+    private void setOwnerName(Project project) {
+        Member owner = memberService.get(project.getOwnerId());
+        project.setOwnerName(owner.getName());
     }
 }

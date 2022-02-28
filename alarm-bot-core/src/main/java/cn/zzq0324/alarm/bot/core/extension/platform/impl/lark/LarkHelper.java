@@ -202,7 +202,6 @@ public class LarkHelper {
                 new JSONObject());
 
         JSONObject response = invoke(request, false);
-        log.info("aaaaa: {}", JSONObject.toJSONString(response));
         JSONArray userList = response.getJSONArray("user_list");
         if (userList.size() > 0) {
             JSONObject userInfo = userList.getJSONObject(0);

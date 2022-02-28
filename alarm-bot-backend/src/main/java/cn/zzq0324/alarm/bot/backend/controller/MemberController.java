@@ -6,7 +6,6 @@ import cn.zzq0324.alarm.bot.core.entity.Member;
 import cn.zzq0324.alarm.bot.core.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +27,7 @@ public class MemberController {
     /**
      * 获取成员分页
      */
-    @GetMapping("/list")
+    @RequestMapping("/list")
     public Page list(MemberRequest request) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page page =
             memberService.listPage(request.getPage(), request.getRows(), request.getName(), request.getMobile(),
