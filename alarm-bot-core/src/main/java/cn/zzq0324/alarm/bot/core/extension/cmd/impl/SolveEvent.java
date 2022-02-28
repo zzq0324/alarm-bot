@@ -6,14 +6,15 @@ import cn.zzq0324.alarm.bot.core.constant.TaskType;
 import cn.zzq0324.alarm.bot.core.entity.Event;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.extension.cmd.Command;
+import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
+import cn.zzq0324.alarm.bot.core.extension.cmd.context.SolveEventContext;
+import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
 import cn.zzq0324.alarm.bot.core.service.EventService;
 import cn.zzq0324.alarm.bot.core.service.TaskService;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.core.util.DateUtils;
-import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
-import cn.zzq0324.alarm.bot.core.extension.cmd.context.SolveEventContext;
-import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
+import cn.zzq0324.alarm.bot.core.vo.IMMessage;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,8 @@ public class SolveEvent implements Command<SolveEventContext> {
     private TaskService taskService;
 
     @Override
-    public CommandContext matchCommand(Message message) {
+    public CommandContext matchCommand(IMMessage imMessage) {
+        Message message = imMessage.getMessageList().get(0);
         // 解决事件
         if (message.getContent().contains(CommandConstants.SOLVE_EVENT)) {
             Event event = eventService.getByChatGroupId(message.getChatGroupId());
@@ -54,7 +56,7 @@ public class SolveEvent implements Command<SolveEventContext> {
 
     @Transactional
     @Override
-    public void execute(SolveEventContext context) {
+    public boolean execute(SolveEventContext context) {
         Message message = context.getMessage();
         Event event = eventService.getByChatGroupId(message.getChatGroupId());
 
@@ -63,7 +65,7 @@ public class SolveEvent implements Command<SolveEventContext> {
             ExtensionLoader.getDefaultExtension(PlatformExt.class)
                 .replyText(message.getThirdMessageId(), alarmBotProperties.getNotInAlarmGroup());
 
-            return;
+            return false;
         }
 
         String summary = getSummary(message.getContent());
@@ -72,7 +74,7 @@ public class SolveEvent implements Command<SolveEventContext> {
             ExtensionLoader.getDefaultExtension(PlatformExt.class)
                 .replyText(message.getThirdMessageId(), alarmBotProperties.getSolveSummaryMissing());
 
-            return;
+            return false;
         }
 
         Date now = new Date();
@@ -94,6 +96,8 @@ public class SolveEvent implements Command<SolveEventContext> {
         // 更新事件状态并增加日志
         event.setSummary(summary);
         eventService.closeEvent(event);
+
+        return true;
     }
 
     /**

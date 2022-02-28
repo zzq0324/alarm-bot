@@ -1,0 +1,121 @@
+<div class="easyui-layout" data-options="fit:true">
+    <!-- begin search bar -->
+    <div data-options="region:'north'" style="height:80px;padding: 10px;" class="easyui-panel" title="搜索条件">
+        <label>事件状态：</label><select class="easyui-combobox" id="searchEventStatus" style="width:120px;">
+            <option value="-1">全部</option>
+            <option value="1">处理中</option>
+            <option value="3">已完成</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>开始时间：</label><input class="easyui-datebox" id="searchEventStartDate" style="width:120px" required>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>结束时间：</label><input class="easyui-datebox" id="searchEventEndDate" style="width:120px" required>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="searchEvent()">开始查询</a>
+    </div>
+    <!-- end search bar -->
+
+    <!-- begin data grid -->
+    <div data-options="region:'center',title:'事件列表'">
+        <table id="eventDataGrid" class="easyui-datagrid" style="width:100%;height:100%"
+            data-options="rownumbers:true,pagination:true,method:'get',fit:true,fitColumns:true">
+            <thead>
+                <tr>
+                    <th data-options="field:'id',width:30">ID</th>
+                    <th data-options="field:'projectName',width:60">关联项目</th>
+                    <th data-options="field:'detail',width:160,formatter:eventDetailFormat">事件信息</th>
+                    <th data-options="field:'eventStatus',width:20,formatter:eventStatusFormat">状态</th>
+                    <th data-options="field:'createTime',width:70,formatter:formatLongToDate">创建时间</th>
+                    <th data-options="field:'summary',width:120">事件小结</th>
+                    <th data-options="field:'action',width:60,formatter:showOperateBtn">操作</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- end data grid -->
+</div>
+
+<script type="text/javascript">
+    function eventDetailFormat(value, row) {
+        return '<div title="' + value + '" style="' + newLineStyle + '">' + value + '</div>';
+    }
+
+    function eventStatusFormat(value, row) {
+        if (value == 'FINISH') {
+            return '<span style="color:green">完成</span>';
+        }
+
+        return '<span style="color:blue">处理中</span>';
+    }
+
+    function formatLongToDate(value) {
+        var date = new Date(value);
+
+        return formatFullDate(date);
+    }
+
+    function showOperateBtn(value, row) {
+        var html = '';
+        var chatGroupId = row.chatGroupId;
+        // 由于暂时打不开群聊，这边覆盖
+        if (row.eventStatus != 'FINISH') {
+            var linkUrl = null;
+            // 飞书
+            if (chatGroupId.indexOf('oc_') > -1) {
+                linkUrl = 'https://applink.feishu.cn/client/chat/open?openId=' + chatGroupId;
+            }
+
+            html += '<a target="_blank" href="' + linkUrl + '" class="easyui-linkbutton" data-options="iconCls:\'icon-add\'">加入群聊</a>';
+        }
+
+        if (html) {
+            html += "&nbsp;&nbsp;";
+        }
+
+        html = '<a href="#" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'" onclick="openChatGroupMsg(\'' + chatGroupId + '\')">群聊消息</a>';
+
+        return html;
+    }
+
+    function openChatGroupMsg(chatGroupId) {
+        var chagGroupMsgTabId = '告警群聊消息';
+        CHAT_GROUP_ID = chatGroupId;
+        var tabPanel = $('#wu-tabs');
+        if (tabPanel.tabs('exists', chagGroupMsgTabId)) {
+            tabPanel.tabs('close', chagGroupMsgTabId);
+        }
+
+        addTab(chagGroupMsgTabId, '/pages/message.html');
+    }
+
+    function getQueryParams() {
+        return {
+            status: $('#searchEventStatus').combobox('getValue'),
+            startDate: $('#searchEventStartDate').datebox('getValue'),
+            endDate: $('#searchEventEndDate').datebox('getValue')
+        };
+    }
+
+    function searchEvent() {
+        $('#eventDataGrid').datagrid('load', getQueryParams());
+    }
+
+    $(function () {
+        // 初始化日期
+        var now = new Date();
+
+        var endDateValue = formatDate(now);
+        now.setDate(now.getDate() - 7);
+        var startDateValue = formatDate(now);
+        $('#searchEventStartDate').datebox('setValue', startDateValue);
+        $('#searchEventEndDate').datebox('setValue', endDateValue);
+
+        $('#eventDataGrid').datagrid({
+            url: '/event/list',
+            onLoadSuccess: function () {
+                $(this).datagrid('getPanel').find('a.easyui-linkbutton').linkbutton();
+            },
+            queryParams: getQueryParams()
+        });
+    });
+</script>

@@ -6,11 +6,11 @@ import cn.zzq0324.alarm.bot.core.constant.MessageType;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.extension.cmd.Command;
 import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
+import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.BaseLarkMessageParser;
+import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.LarkMessageParserExt;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.core.vo.IMMessage;
-import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.BaseLarkMessageParser;
-import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.LarkMessageParserExt;
 import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.MentionEvent;
@@ -44,19 +44,19 @@ public class LarkTextMessageParser extends BaseLarkMessageParser implements Lark
         message.setMessageType(MessageType.TEXT);
         message.setContent(formatAtInfo(content.getString("text"), mentionMap));
 
-        // 只有文本消息才需要解析命令
-        imMessage.setCommandContext(getCommandContext(message));
-        // 设置消息列表
-        imMessage.setMessageList(Arrays.asList(message));
         // 是否@机器人
         imMessage.setAtRobot(isAtRobot(mentionMap));
+        // 设置消息列表
+        imMessage.setMessageList(Arrays.asList(message));
+        // 只有文本消息才需要解析命令
+        imMessage.setCommandContext(getCommandContext(imMessage));
     }
 
-    private CommandContext getCommandContext(Message message) {
+    private CommandContext getCommandContext(IMMessage imMessage) {
         List<Command> commandList = ExtensionLoader.getExtensionLoader(Command.class).getExtensionList();
 
         for (Command command : commandList) {
-            CommandContext commandContext = command.matchCommand(message);
+            CommandContext commandContext = command.matchCommand(imMessage);
 
             if (commandContext != null) {
                 return commandContext;

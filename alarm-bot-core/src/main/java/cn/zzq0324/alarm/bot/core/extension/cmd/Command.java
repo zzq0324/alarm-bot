@@ -1,8 +1,8 @@
 package cn.zzq0324.alarm.bot.core.extension.cmd;
 
-import cn.zzq0324.alarm.bot.core.entity.Message;
-import cn.zzq0324.alarm.bot.core.spi.SPI;
 import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
+import cn.zzq0324.alarm.bot.core.spi.SPI;
+import cn.zzq0324.alarm.bot.core.vo.IMMessage;
 
 /**
  * description: Command <br>
@@ -13,10 +13,10 @@ import cn.zzq0324.alarm.bot.core.extension.cmd.context.CommandContext;
 @SPI("command")
 public interface Command<T extends CommandContext> {
 
-    CommandContext matchCommand(Message message);
+    CommandContext matchCommand(IMMessage imMessage);
 
     /**
      * 执行命令
      */
-    void execute(T context);
+    boolean execute(T context);
 }

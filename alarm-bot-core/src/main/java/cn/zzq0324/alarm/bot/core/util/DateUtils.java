@@ -1,5 +1,6 @@
 package cn.zzq0324.alarm.bot.core.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +12,8 @@ import java.util.concurrent.TimeUnit;
  * version: 1.0 <br>
  */
 public class DateUtils {
+
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
     // 1天的毫秒数
     public static long ONE_DAY_MILLS = TimeUnit.DAYS.toMillis(1);
@@ -49,5 +52,15 @@ public class DateUtils {
         calendar.add(calendarField, amount);
 
         return calendar.getTime();
+    }
+
+    public static Date formatDate(String date, String format) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+
+            return dateFormat.parse(date);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

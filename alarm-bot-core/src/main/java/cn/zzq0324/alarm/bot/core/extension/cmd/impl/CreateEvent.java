@@ -16,6 +16,7 @@ import cn.zzq0324.alarm.bot.core.service.MemberService;
 import cn.zzq0324.alarm.bot.core.service.ProjectService;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
+import cn.zzq0324.alarm.bot.core.vo.IMMessage;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,12 @@ public class CreateEvent implements Command<CreateEventContext> {
     private Pattern pattern = null;
 
     @Override
-    public CommandContext matchCommand(Message message) {
+    public CommandContext matchCommand(IMMessage imMessage) {
+        if (!imMessage.isAtRobot()) {
+            return null;
+        }
+
+        Message message = imMessage.getMessageList().get(0);
         // 根据正则表达式查找project
         String projectName = extractProjectName(message.getContent());
 
@@ -69,16 +75,16 @@ public class CreateEvent implements Command<CreateEventContext> {
     }
 
     @Override
-    public void execute(CreateEventContext context) {
+    public boolean execute(CreateEventContext context) {
         // 根据项目名称查找对应的成员
         Project project = context.getProject();
         Message message = context.getMessage();
 
         // 找不到项目或者项目成员未配置
-        if (project == null || StringUtils.isEmpty(project.getMemberIds())) {
+        if (project == null || (StringUtils.isEmpty(project.getMemberIds()) && project.getOwnerId() == null)) {
             sendProjectMemberMissingTip(message);
 
-            return;
+            return false;
         }
 
         // 查询事件是否已经创建过
@@ -86,7 +92,7 @@ public class CreateEvent implements Command<CreateEventContext> {
         if (existEvent != null) {
             log.warn("event: {} exists", JSONObject.toJSONString(existEvent));
 
-            return;
+            return false;
         }
 
         // 查找项目对应的人，用于接收告警信息
@@ -94,7 +100,7 @@ public class CreateEvent implements Command<CreateEventContext> {
         if (CollectionUtils.isEmpty(thirdPlatformOpenIdList)) {
             sendProjectMemberMissingTip(message);
 
-            return;
+            return false;
         }
 
         // 创建群聊并拉人入群
@@ -109,6 +115,8 @@ public class CreateEvent implements Command<CreateEventContext> {
         //  回复群消息，告知拉群处理
         ExtensionLoader.getDefaultExtension(PlatformExt.class)
             .replyText(message.getThirdMessageId(), alarmBotProperties.getReplyAlarm());
+
+        return true;
     }
 
     private void sendProjectMemberMissingTip(Message message) {
@@ -146,6 +154,10 @@ public class CreateEvent implements Command<CreateEventContext> {
         // 查询对应的人
         List<String> thirdOpenIdList = new ArrayList<>();
         Set<String> memberIdSet = StringUtils.commaDelimitedListToSet(project.getMemberIds());
+        if (project.getOwnerId() != null) {
+            memberIdSet.add(String.valueOf(project.getOwnerId()));
+        }
+
         for (String memberIdStr : memberIdSet) {
             Member member = memberService.get(Long.parseLong(memberIdStr));
 

@@ -75,7 +75,7 @@ public class BaseLarkMessageParser {
         Message message = new Message();
         message.setThirdMessageId(eventMessage.getMessageId());
         message.setChatGroupId(eventMessage.getChatId());
-        message.setSender(getOperator(eventData.getSender()));
+        message.setSender(getOperator(eventData.getSender()).getName());
         message.setSendTime(new Date(eventMessage.getCreateTime()));
 
         return message;

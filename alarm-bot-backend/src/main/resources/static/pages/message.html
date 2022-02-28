@@ -1,0 +1,35 @@
+<div class="easyui-layout" data-options="fit:true">
+    <!-- begin data grid -->
+    <div data-options="region:'center',title:'群聊消息列表'">
+        <table id="messageDataGrid" class="easyui-datagrid" style="width:100%;height:100%"
+            data-options="singleSelect:true,rownumbers:true,pagination:true,method:'get',fit:true,fitColumns:true">
+            <thead>
+                <tr>
+                    <th data-options="field:'sender',width:40">发送人</th>
+                    <th data-options="field:'content',width:240,formatter:formatMessageContent">消息内容</th>
+                    <th data-options="field:'sendTime',width:60">发送时间</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- end data grid -->
+</div>
+
+<script type="text/javascript">
+    function formatMessageContent(value, row) {
+        if (row.messageType == 'IMAGE') {
+            return '<img src="' + value + '" style="height:100px"/>';
+        }
+
+        return '<div title="' + value + '" style="' + newLineStyle + '">' + value + '</div>';
+    }
+
+    $(function () {
+        $('#messageDataGrid').datagrid({
+            url: '/message/list',
+            queryParams: {
+                chatGroupId: CHAT_GROUP_ID
+            }
+        });
+    });
+</script>

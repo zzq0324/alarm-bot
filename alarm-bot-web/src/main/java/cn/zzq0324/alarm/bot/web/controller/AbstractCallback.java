@@ -62,12 +62,6 @@ public abstract class AbstractCallback {
             return;
         }
 
-        if (isAttentionEvent(eventType)) {
-            // TODO 记录event_log
-
-            return;
-        }
-
         // 以下开始为IM消息解析消息
         IMMessage imMessage = ExtensionLoader.getDefaultExtension(PlatformExt.class).parseIMMessage(callbackData);
 
@@ -85,12 +79,14 @@ public abstract class AbstractCallback {
         }
 
         // 执行对应的指令
+        boolean commandResult = false;
         if (commandContext != null) {
-            ExtensionLoader.getExtension(Command.class, commandContext.getCommand()).execute(commandContext);
+            String command = commandContext.getCommand();
+            commandResult = ExtensionLoader.getExtension(Command.class, command).execute(commandContext);
         }
 
         // 创建或者在告警群发群聊消息，直接记录
-        if (commandContext instanceof CreateEventContext
+        if ((commandContext instanceof CreateEventContext && commandResult)
             || eventService.getByChatGroupId(firstMessage.getChatGroupId()) != null) {
             imMessage.getMessageList().stream().forEach(message -> messageService.add(message));
         }

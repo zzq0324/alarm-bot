@@ -4,6 +4,7 @@ import cn.zzq0324.alarm.bot.core.constant.Status;
 import cn.zzq0324.alarm.bot.core.dao.EventDao;
 import cn.zzq0324.alarm.bot.core.entity.Event;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,30 @@ public class EventService {
         queryWrapper.eq("third_message_id", thirdMessageId);
 
         return eventDao.selectOne(queryWrapper);
+    }
+
+    public Page<Event> listPage(int currentPage, int size, long projectId, int status, Date startDate, Date endDate) {
+        Page page = new Page(currentPage, size);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if (projectId > 0) {
+            queryWrapper.like("project_id", projectId);
+        }
+
+        if (status >= 0) {
+            queryWrapper.eq("event_status", status);
+        }
+
+        if (startDate != null) {
+            queryWrapper.gt("create_time", startDate);
+        }
+
+        if (endDate != null) {
+            queryWrapper.lt("create_time", endDate);
+        }
+
+        queryWrapper.orderByDesc("id");
+
+        return eventDao.selectPage(page, queryWrapper);
     }
 
     public Event getByChatGroupId(String chatGroupId) {

@@ -1,6 +1,6 @@
 # HTTP监听端口
 server:
-  port: 8888
+  port: 9999
 
 # datasource config
 spring:
