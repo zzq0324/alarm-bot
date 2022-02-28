@@ -60,11 +60,6 @@ public class LarkCallbackController extends AbstractCallback {
     }
 
     @Override
-    public boolean isAttentionEvent(String eventType) {
-        return false;
-    }
-
-    @Override
     public CallbackData unmarshal(String data) {
         // 如果配置了encrypt key，先解密
         if (!StringUtils.isEmpty(config.getAppSettings().getEncryptKey())) {

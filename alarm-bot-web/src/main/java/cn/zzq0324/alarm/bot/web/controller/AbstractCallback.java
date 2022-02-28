@@ -57,8 +57,8 @@ public abstract class AbstractCallback {
     public void handleCallback(CallbackData callbackData) {
         String eventType = callbackData.getEventType();
 
-        // 不是否关注的事件并且不是IM消息回调，不予处理
-        if (!isAttentionEvent(eventType) && !isImMessageEvent(eventType)) {
+        // IM消息回调，不予处理
+        if (!isImMessageEvent(eventType)) {
             return;
         }
 
@@ -96,11 +96,6 @@ public abstract class AbstractCallback {
      * 判断当前消息是否@机器人事件
      */
     public abstract boolean isImMessageEvent(String eventType);
-
-    /**
-     * 判断当前事件是否关注的事件，例如用户入群、解散群聊等
-     */
-    public abstract boolean isAttentionEvent(String eventType);
 
     /**
      * 解码回调数据，解密 -> 校验token等
