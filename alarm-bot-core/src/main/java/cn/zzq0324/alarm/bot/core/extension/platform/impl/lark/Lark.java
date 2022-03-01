@@ -7,10 +7,8 @@ import cn.zzq0324.alarm.bot.core.entity.Event;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
-import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.LarkMessageParserExt;
 import cn.zzq0324.alarm.bot.core.service.ProjectService;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
-import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.core.util.DateUtils;
 import cn.zzq0324.alarm.bot.core.util.FileUtils;
 import cn.zzq0324.alarm.bot.core.vo.CallbackData;
@@ -21,7 +19,6 @@ import com.larksuite.oapi.core.api.request.Request;
 import com.larksuite.oapi.core.api.request.RequestOptFn;
 import com.larksuite.oapi.core.utils.Jsons;
 import com.larksuite.oapi.service.contact.v3.model.User;
-import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,20 +83,7 @@ public class Lark implements PlatformExt {
         MessageReceiveEventData eventData =
             Jsons.DEFAULT_GSON.fromJson(callbackData.getData().toJSONString(), MessageReceiveEventData.class);
 
-        EventMessage eventMessage = eventData.getMessage();
-
-        LarkMessageParserExt messageParser =
-            ExtensionLoader.getExtension(LarkMessageParserExt.class, eventMessage.getMessageType());
-
-        // 不支持的解析，不做处理
-        if (messageParser == null) {
-            return null;
-        }
-
-        IMMessage imMessage = new IMMessage();
-        messageParser.parse(imMessage, eventData);
-
-        return imMessage;
+        return larkHelper.parse(eventData);
     }
 
     @Override

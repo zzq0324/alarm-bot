@@ -16,6 +16,7 @@ import cn.zzq0324.alarm.bot.core.service.MemberService;
 import cn.zzq0324.alarm.bot.core.service.ProjectService;
 import cn.zzq0324.alarm.bot.core.spi.Extension;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
+import cn.zzq0324.alarm.bot.core.util.ChatGroupUtils;
 import cn.zzq0324.alarm.bot.core.vo.IMMessage;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CreateEvent implements Command<CreateEventContext> {
 
-    private static String CHAT_GROUP_NAME = "️[%s]告警群";
-    private static String CHAT_GROUP_DESC = "问题结束后请按格式标记解决，有任何问题可以先@Bot";
+    private static String CHAT_GROUP_DESC = "问题结束后请按格式标记解决，有任何问题可以先@机器人";
 
     @Autowired
     private AlarmBotProperties alarmBotProperties;
@@ -125,7 +125,7 @@ public class CreateEvent implements Command<CreateEventContext> {
     }
 
     private String createChatGroup(Project project, List<String> thirdPlatformOpenIdList) {
-        String chatGroupName = String.format(CHAT_GROUP_NAME, project.getName());
+        String chatGroupName = ChatGroupUtils.getChatGroupName(project.getName());
         // 找到直接创建群聊，拉人并发送消息
         String chatGroupId =
             ExtensionLoader.getDefaultExtension(PlatformExt.class).createChatGroup(chatGroupName, CHAT_GROUP_DESC);

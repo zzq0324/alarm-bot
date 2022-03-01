@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.core.extension.platform;
 
 import cn.zzq0324.alarm.bot.core.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.LarkHelper;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class LarkHelperTest {
 
     @Test
     public void testGetOpenIdByMobile() {
-        Assertions.assertNotNull(larkHelper.getOpenIdByIdentify("x"));
+        Assertions.assertNotNull(larkHelper.getOpenIdByIdentify("zhengzq@homeking365.com"));
     }
 
     @Test
@@ -44,6 +45,12 @@ public class LarkHelperTest {
 
     @Test
     public void downloadChatGroupMessage() {
-        larkHelper.downloadChatMessage("oc_3f78935d535c6999005def650a37d43c");
+        System.out.println(
+            JSONObject.toJSONString(larkHelper.downloadChatMessage("oc_b49eb724e3c8c2d922d17bd0a014b300", 0, 0)));
+    }
+
+    @Test
+    public void testGetBotInfo() {
+        Assertions.assertNotNull(larkHelper.getBotInfo());
     }
 }

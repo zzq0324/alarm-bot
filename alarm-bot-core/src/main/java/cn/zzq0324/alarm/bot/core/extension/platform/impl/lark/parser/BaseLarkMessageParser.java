@@ -1,11 +1,13 @@
 package cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser;
 
 import cn.zzq0324.alarm.bot.core.config.AlarmBotProperties;
+import cn.zzq0324.alarm.bot.core.constant.LarkConstants;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.LarkHelper;
 import cn.zzq0324.alarm.bot.core.extension.storage.StorageExt;
 import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.core.vo.Operator;
+import com.larksuite.oapi.service.bot.v3.model.BotInfo;
 import com.larksuite.oapi.service.contact.v3.model.User;
 import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.EventSender;
@@ -13,7 +15,6 @@ import com.larksuite.oapi.service.im.v1.model.MentionEvent;
 import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,6 +93,10 @@ public class BaseLarkMessageParser {
     }
 
     public Operator getOperator(EventSender sender) {
+        if (sender.getSenderType().equals(LarkConstants.SENDER_TYPE)) {
+            return new Operator("机器人", sender.getSenderId().getOpenId(), "");
+        }
+
         User user = larkHelper.getLarkUser(sender.getSenderId().getOpenId(), "open_id");
 
         return new Operator(user.getName(), user.getOpenId(), user.getUnionId());
@@ -105,10 +110,11 @@ public class BaseLarkMessageParser {
             return false;
         }
 
+        BotInfo botInfo = larkHelper.getBotInfo();
+
         for (MentionEvent mention : mentionMap.values()) {
-            // 没有UserID并且是和application.yml里面的BotName配置一致，则判定为有@机器人
-            if (!StringUtils.hasLength(mention.getId().getUserId()) && mention.getName()
-                .equals(alarmBotProperties.getBotName())) {
+            // 被@的openId是机器人的openId
+            if (mention.getId().getOpenId().equals(botInfo.getOpenId())) {
                 return true;
             }
         }

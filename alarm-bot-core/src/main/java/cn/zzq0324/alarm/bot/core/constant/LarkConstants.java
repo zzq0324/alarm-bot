@@ -46,4 +46,11 @@ public interface LarkConstants {
      * 消息类型-系统消息，例如：xxx加入群聊
      */
     String MESSAGE_TYPE_SYSTEM = "system";
+
+    String ID_TYPE = "app_id";
+
+    /**
+     * 发送类型
+     */
+    String SENDER_TYPE = "app";
 }

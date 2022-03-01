@@ -1,6 +1,9 @@
 package cn.zzq0324.alarm.bot.core.extension.platform.impl.lark;
 
 import cn.zzq0324.alarm.bot.core.constant.LarkConstants;
+import cn.zzq0324.alarm.bot.core.extension.platform.impl.lark.parser.LarkMessageParserExt;
+import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
+import cn.zzq0324.alarm.bot.core.vo.IMMessage;
 import cn.zzq0324.alarm.bot.core.vo.LarkGetUserIdRequest;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -11,26 +14,35 @@ import com.larksuite.oapi.core.api.ReqCaller;
 import com.larksuite.oapi.core.api.request.Request;
 import com.larksuite.oapi.core.api.request.RequestOptFn;
 import com.larksuite.oapi.core.api.response.Response;
+import com.larksuite.oapi.service.bot.v3.BotService;
+import com.larksuite.oapi.service.bot.v3.model.BotInfo;
 import com.larksuite.oapi.service.contact.v3.ContactService;
 import com.larksuite.oapi.service.contact.v3.model.User;
 import com.larksuite.oapi.service.im.v1.ImService;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.ChatCreateResult;
+import com.larksuite.oapi.service.im.v1.model.ChatListResult;
 import com.larksuite.oapi.service.im.v1.model.ChatMembersCreateReqBody;
+import com.larksuite.oapi.service.im.v1.model.EventMessage;
+import com.larksuite.oapi.service.im.v1.model.ListChat;
 import com.larksuite.oapi.service.im.v1.model.Message;
 import com.larksuite.oapi.service.im.v1.model.MessageCreateReqBody;
 import com.larksuite.oapi.service.im.v1.model.MessageListResult;
+import com.larksuite.oapi.service.im.v1.model.MessageReceiveEventData;
 import com.larksuite.oapi.service.im.v1.model.MessageReplyReqBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,6 +58,8 @@ public class LarkHelper {
     private static final RequestOptFn TIMEOUT_OPT = Request.setTimeout(2, TimeUnit.MINUTES);
 
     private static final int PAGE_SIZE = 50;
+
+    private static BotInfo BOT_INFO = null;
 
     @Autowired
     private Config config;
@@ -81,7 +95,14 @@ public class LarkHelper {
         reqBody.setName(name);
         reqBody.setDescription(description);
 
-        ChatCreateResult result = executeCaller(imService.getChats().create(reqBody, TIMEOUT_OPT));
+        ImService.ChatCreateReqCall caller = imService.getChats().create(reqBody, TIMEOUT_OPT);
+        // 反射，设置机器人为群主
+        Field field = ReflectionUtils.findField(ImService.ChatCreateReqCall.class, "queryParams");
+        ReflectionUtils.makeAccessible(field);
+        Map<String, Object> queryParma = (Map<String, Object>)ReflectionUtils.getField(field, caller);
+        queryParma.put("set_bot_manager", true);
+
+        ChatCreateResult result = executeCaller(caller);
 
         log.info("create lark chat group, name: {}, chatGroupId: {}", name, result.getChatId());
 
@@ -97,13 +118,45 @@ public class LarkHelper {
         executeCaller(imService.getChats().delete(TIMEOUT_OPT).setChatId(chatGroupId));
     }
 
-    public List<Message> downloadChatMessage(String chatId) {
+    public IMMessage parse(MessageReceiveEventData eventData) {
+        EventMessage eventMessage = eventData.getMessage();
+
+        LarkMessageParserExt messageParser =
+            ExtensionLoader.getExtension(LarkMessageParserExt.class, eventMessage.getMessageType());
+
+        // 不支持的解析，不做处理
+        if (messageParser == null) {
+            return null;
+        }
+
+        IMMessage imMessage = new IMMessage();
+        messageParser.parse(imMessage, eventData);
+
+        return imMessage;
+    }
+
+    /**
+     * 下载聊天信息
+     *
+     * @param chatId    群组ID
+     * @param startTime 开始时间，秒为单位
+     * @param endTime   结束时间，秒为单位
+     */
+    public List<Message> downloadChatMessage(String chatId, long startTime, long endTime) {
         List<Message> messageList = new ArrayList<>();
 
         ImService imService = new ImService(config);
         ImService.MessageListReqCall caller =
             imService.getMessages().list(TIMEOUT_OPT).setContainerIdType("chat").setContainerId(chatId)
                 .setPageSize(PAGE_SIZE);
+
+        if (startTime > 0) {
+            caller.setStartTime(String.valueOf(startTime));
+        }
+
+        if (endTime > 0) {
+            caller.setEndTime(String.valueOf(endTime));
+        }
 
         boolean hasMore = true;
         while (hasMore) {
@@ -117,8 +170,41 @@ public class LarkHelper {
             }
         }
 
-        System.out.println(JSONObject.toJSONString(messageList));
         return messageList;
+    }
+
+    public BotInfo getBotInfo() {
+        // 暂时不考虑并发问题
+        if (BOT_INFO != null) {
+            return BOT_INFO;
+        }
+
+        BotService botService = new BotService(config);
+
+        BotService.BotGetReqCall caller = botService.getBots().get(TIMEOUT_OPT);
+
+        BOT_INFO = executeCaller(caller).getBot();
+
+        return BOT_INFO;
+    }
+
+    public List<ListChat> getRobotChatGroups() {
+        List<ListChat> chatList = new ArrayList<>();
+        ImService imService = new ImService(config);
+        ImService.ChatListReqCall caller = imService.getChats().list(TIMEOUT_OPT).setPageSize(PAGE_SIZE);
+        boolean hasMore = true;
+
+        while (hasMore) {
+            ChatListResult result = executeCaller(caller);
+            chatList.addAll(Arrays.asList(result.getItems()));
+            if (result.getHasMore()) {
+                caller.setPageToken(result.getPageToken());
+            } else {
+                hasMore = false;
+            }
+        }
+
+        return chatList;
     }
 
     /**
@@ -209,7 +295,6 @@ public class LarkHelper {
         JSONArray userList = response.getJSONArray("user_list");
         if (userList.size() > 0) {
             JSONObject userInfo = userList.getJSONObject(0);
-
             return userInfo.getString("user_id");
         }
 

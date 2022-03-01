@@ -52,6 +52,8 @@ alarm-bot:
   reply-solved-to-chat-group: '告警已解除，处理时效：%s。小结：%s'
   # N分钟后解散群聊
   destroy-group-after-minutes: 15
+  # 检测最近N分钟的机器人HOOK消息
+  check-robot-hook-message: 60
   # 任务每天定时提醒未跟进事项：8点至20点每两小时提醒一次
   pending-event-notify-cron: '0 0 8-20/2 * * ? '
   # 资源文件下载目录，全路径

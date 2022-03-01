@@ -36,8 +36,8 @@ public class MemberController {
         return new Page(page);
     }
 
-    @RequestMapping("/getMemberByIdentify")
-    public Member getMemberByIdentify(String identity) {
+    @RequestMapping("/getMemberByIdentity")
+    public Member getMemberByIdentity(String identity) {
         Member member = memberService.getByIdentity(identity);
         if (member == null) {
             member = new Member();
@@ -50,13 +50,13 @@ public class MemberController {
     }
 
     @RequestMapping("/add")
-    public void addMember(String identify) {
-        Member member = memberService.getByIdentity(identify);
+    public void addMember(String identity) {
+        Member member = memberService.getByIdentity(identity);
         if (member != null) {
             return;
         }
 
-        memberService.addMember(identify);
+        memberService.addMember(identity);
     }
 
     @RequestMapping("/updateStatus")

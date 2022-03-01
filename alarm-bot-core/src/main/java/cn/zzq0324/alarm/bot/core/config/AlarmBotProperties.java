@@ -61,6 +61,11 @@ public class AlarmBotProperties {
     private int destroyGroupAfterMinutes;
 
     /**
+     * 检验最近N分钟内的机器人HOOK消息
+     */
+    private int checkRobotHookMessage;
+
+    /**
      * URL前缀
      */
     private String urlPrefix;
