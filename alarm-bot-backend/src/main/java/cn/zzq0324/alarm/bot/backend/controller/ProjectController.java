@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * description: ProjectController <br>
@@ -25,6 +27,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
+
+    private static final Map<Long, String> MEMBER_NAME_CACHE = new ConcurrentHashMap<>();
 
     @Autowired
     private ProjectService projectService;
@@ -59,11 +63,15 @@ public class ProjectController {
         if (StringUtils.hasLength(memberIds)) {
             String[] memberIdArr = StringUtils.commaDelimitedListToStringArray(memberIds);
             for (String memberId : memberIdArr) {
-                Member member = memberService.get(Long.parseLong(memberId));
+                String memberName = MEMBER_NAME_CACHE.computeIfAbsent(Long.parseLong(memberId), id -> {
+                    Member member = memberService.get(Long.parseLong(memberId));
+                    return member.getName();
+                });
+
                 if (memberNameBuilder.length() > 0) {
                     memberNameBuilder.append("，");
                 }
-                memberNameBuilder.append(member.getName());
+                memberNameBuilder.append(memberName);
             }
         }
 

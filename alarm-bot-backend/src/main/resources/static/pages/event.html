@@ -25,8 +25,9 @@
                     <th data-options="field:'projectName',width:60">关联项目</th>
                     <th data-options="field:'detail',width:160,formatter:eventDetailFormat">事件信息</th>
                     <th data-options="field:'eventStatus',width:20,formatter:eventStatusFormat">状态</th>
-                    <th data-options="field:'createTime',width:70,formatter:formatLongToDate">创建时间</th>
+                    <th data-options="field:'createTime',width:70">创建时间</th>
                     <th data-options="field:'summary',width:120">事件小结</th>
+                    <th data-options="field:'duration',width:70">创建时间</th>
                     <th data-options="field:'action',width:40,formatter:showOperateBtn">操作</th>
                 </tr>
             </thead>
@@ -46,12 +47,6 @@
         }
 
         return '<span style="color:blue">处理中</span>';
-    }
-
-    function formatLongToDate(value) {
-        var date = new Date(value);
-
-        return formatFullDate(date);
     }
 
     function showOperateBtn(value, row) {

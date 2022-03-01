@@ -50,8 +50,9 @@ public class EventController {
             long projectId = item.getLong("projectId");
             Project project = projectService.getById(projectId);
             item.put("projectName", project.getName());
-            item.put("createTime", data.getCreateTime().getTime());
-            item.put("finishTime", data.getFinishTime() == null ? -1 : data.getFinishTime().getTime());
+            if (data.getFinishTime() != null) {
+                item.put("duration", DateUtils.getDiffText(data.getCreateTime(), data.getFinishTime()));
+            }
 
             list.add(item);
         });

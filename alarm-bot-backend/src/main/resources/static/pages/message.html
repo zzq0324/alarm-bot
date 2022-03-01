@@ -18,7 +18,7 @@
 <script type="text/javascript">
     function formatMessageContent(value, row) {
         if (row.messageType == 'IMAGE') {
-            return '<img src="' + value + '" style="height:100px"/>';
+            return '<img src="' + value + '" style="max-height:300px;padding:5px;"/>';
         }
 
         return '<div title="' + value + '" style="' + newLineStyle + '">' + value + '</div>';

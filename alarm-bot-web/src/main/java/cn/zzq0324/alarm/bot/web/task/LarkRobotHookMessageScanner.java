@@ -14,6 +14,7 @@ import cn.zzq0324.alarm.bot.core.spi.ExtensionLoader;
 import cn.zzq0324.alarm.bot.core.util.ChatGroupUtils;
 import cn.zzq0324.alarm.bot.core.util.DateUtils;
 import cn.zzq0324.alarm.bot.core.vo.IMMessage;
+import com.alibaba.fastjson.JSONObject;
 import com.larksuite.oapi.service.bot.v3.model.BotInfo;
 import com.larksuite.oapi.service.im.v1.model.EventMessage;
 import com.larksuite.oapi.service.im.v1.model.EventSender;
@@ -114,30 +115,35 @@ public class LarkRobotHookMessageScanner {
      * 解析并处理消息
      */
     private void parseAndProcessMessage(Message message) {
-        // 转化为MessageReceiveEventData，方便复用其他的类
-        MessageReceiveEventData eventData = convert2EventData(message);
+        try {
+            // 转化为MessageReceiveEventData，方便复用其他的类
+            MessageReceiveEventData eventData = convert2EventData(message);
 
-        // 解析消息
-        IMMessage imMessage = larkHelper.parse(eventData);
-        if (CollectionUtils.isEmpty(imMessage.getMessageList())) {
-            return;
+            // 解析消息
+            IMMessage imMessage = larkHelper.parse(eventData);
+
+            if (imMessage == null || CollectionUtils.isEmpty(imMessage.getMessageList())) {
+                return;
+            }
+
+            CommandContext commandContext = imMessage.getCommandContext();
+            // 只处理创建命令
+            if (!(commandContext instanceof CreateEventContext)) {
+                return;
+            }
+
+            cn.zzq0324.alarm.bot.core.entity.Message firstMessage = imMessage.getMessageList().get(0);
+            // 判断消息是否已处理过，未处理过直接执行
+            Event existEvent = eventService.getByThirdMessageId(firstMessage.getThirdMessageId());
+            if (existEvent != null) {
+                return;
+            }
+
+            // 执行逻辑
+            ExtensionLoader.getExtension(Command.class, commandContext.getCommand()).execute(commandContext);
+        } catch (Exception e) {
+            log.error("process message: {} error.", JSONObject.toJSONString(message), e);
         }
-
-        CommandContext commandContext = imMessage.getCommandContext();
-        // 只处理创建命令
-        if (!(commandContext instanceof CreateEventContext)) {
-            return;
-        }
-
-        cn.zzq0324.alarm.bot.core.entity.Message firstMessage = imMessage.getMessageList().get(0);
-        // 判断消息是否已处理过，未处理过直接执行
-        Event existEvent = eventService.getByThirdMessageId(firstMessage.getThirdMessageId());
-        if (existEvent != null) {
-            return;
-        }
-
-        // 执行逻辑
-        ExtensionLoader.getExtension(Command.class, commandContext.getCommand()).execute(commandContext);
     }
 
     private MessageReceiveEventData convert2EventData(Message message) {
