@@ -18,7 +18,7 @@
 
 ## 流程图
 
-<img src='flow.jpg' width='600'></img>
+<img src='./images/flow.jpg' width='600'></img>
 
 ## 未来计划
 

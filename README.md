@@ -28,7 +28,7 @@ alarm-bot-parent
 
 ### 流程图
 
-<img src='docs/flow.jpg' width='600'></img>
+<img src='docs/images/flow.jpg' width='600'></img>
 
 ## 未来计划
 
