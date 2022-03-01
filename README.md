@@ -37,10 +37,3 @@ alarm-bot-parent
 ### 流程图
 
 <img src='docs/images/flow.jpg' width='600'></img>
-
-## 未来计划
-
-- 完善`alarm-bot-backend`，后台支持项目、成员的配置；
-- 项目支持Owner和Member的角色，便于日常管理；
-- 支持钉钉；
-- 支持企业微信。
