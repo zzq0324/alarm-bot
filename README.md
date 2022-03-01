@@ -12,7 +12,6 @@
 
 https://user-images.githubusercontent.com/24889976/155530740-da21479d-4a33-46b0-8450-2b65ede2a69a.mp4
 
-
 ## 技术设计
 
 ### 项目结构
@@ -29,7 +28,7 @@ alarm-bot-parent
 
 ### 流程图
 
-<img src='docs/流程图.jpg' width='600'></img>
+<img src='docs/flow.jpg' width='600'></img>
 
 ## 未来计划
 
