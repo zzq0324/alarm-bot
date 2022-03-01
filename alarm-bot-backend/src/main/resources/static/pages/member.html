@@ -3,7 +3,8 @@
     <div data-options="region:'north'" style="height:80px;padding: 10px;" class="easyui-panel" title="搜索条件">
         <label>姓名：</label><input class="easyui-textbox" id="searchMemberName" style="width:120px">
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <label>手机号：</label><input class="easyui-textbox" id="searchMemberMobile" style="width:120px">
+        <label>身份标识：</label><input class="easyui-textbox" id="searchMemberIdentity" style="width:120px"
+            data-options="placeholder:'请输入手机号或邮箱'">
         &nbsp;&nbsp;&nbsp;&nbsp;
         <label>状态：</label><select class="easyui-combobox" id="searchMemberStatus" style="width:120px;">
             <option value="-1">全部</option>
@@ -24,7 +25,7 @@
                     <th data-options="field:'ck',checkbox:true"></th>
                     <th data-options="field:'id',width:40">成员ID</th>
                     <th data-options="field:'name',width:80">姓名</th>
-                    <th data-options="field:'mobile',width:80">手机号</th>
+                    <th data-options="field:'identity',width:80">身份标识</th>
                     <th data-options="field:'status',width:40,formatter:memberStatusFormatter">状态</th>
                     <th data-options="field:'openId',width:160">OpenID</th>
                     <th data-options="field:'unionId',width:160">UnionID</th>
@@ -41,9 +42,9 @@
     <form id="memberForm" method="post">
         <input type="hidden" id="memberIdInput" />
         <div style="margin-bottom:20px">
-            <input class="easyui-textbox" id="memberMobileInput" label="手机号:"
-                data-options="prompt:'请输入手机号后点击获取',labelWidth:60,validType:'phone'" style="width:320px;" required />
-            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="getMemberByMobile()">查询</a>
+            <input class="easyui-textbox" id="memberIdentityInput" label="身份标识:"
+                data-options="prompt:'输入邮箱或手机号后点击获取',labelWidth:60,validType:'phone'" style="width:320px;" required />
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="getMemberByIdentity()">查询</a>
         </div>
 
         <div style="margin-bottom:20px">
@@ -88,7 +89,7 @@
     function searchMember() {
         $('#memberDataGrid').datagrid('load', {
             name: $('#searchMemberName').textbox('getValue'),
-            mobile: $('#searchMemberMobile').textbox('getValue'),
+            identity: $('#searchMemberIdentity').textbox('getValue'),
             status: $('#searchMemberStatus').combobox('getValue')
         });
     }
@@ -113,9 +114,9 @@
         });
     }
 
-    function getMemberByMobile() {
-        var mobile = $('#memberMobileInput').textbox('getValue');
-        if (!mobile) {
+    function getMemberByIdentity() {
+        var identity = $('#memberIdentityInput').textbox('getValue');
+        if (!identity) {
             $.messager.alert('系统提醒', '请输入手机号!', 'error');
             return;
         }
@@ -124,9 +125,9 @@
         $('#memberOpenIdInput').textbox('setValue', '');
         $('#memberUnionIdInput').textbox('setValue', '');
 
-        executeAjaxGet('/member/getMemberByMobile?mobile=' + mobile, function (member) {
+        executeAjaxGet('/member/getMemberByIdentity?identity=' + identity, function (member) {
             if (!member || !member.openId) {
-                $.messager.alert('系统提醒', '根据手机号查询不到账号信息，请检查输入是否错误!', 'info');
+                $.messager.alert('系统提醒', '根据标识查询不到账号信息，请检查输入是否错误!', 'info');
 
                 return;
             }
@@ -146,13 +147,13 @@
             return;
         }
 
-        var mobile = $('#memberMobileInput').textbox('getValue');
-        if (!mobile) {
+        var identity = $('#memberIdentityInput').textbox('getValue');
+        if (!identity) {
             $.messager.alert('系统提醒', '请输入手机号!', 'error');
             return;
         }
 
-        executeAjaxGet('/member/add?mobile=' + mobile, function (data) {
+        executeAjaxGet('/member/add?identity=' + identity, function (data) {
             // 关闭弹窗
             $('#memberDialog').dialog('close');
             // 刷新表格

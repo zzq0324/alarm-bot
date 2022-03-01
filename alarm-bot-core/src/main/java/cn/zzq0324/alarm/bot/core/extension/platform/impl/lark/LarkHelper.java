@@ -193,9 +193,13 @@ public class LarkHelper {
         return content.toJSONString();
     }
 
-    public String getOpenIdByMobile(String mobile) {
+    public String getOpenIdByIdentify(String identify) {
         LarkGetUserIdRequest params = new LarkGetUserIdRequest();
-        params.setMobiles(new String[] {mobile});
+        if (identify.indexOf("@") > 0) {
+            params.setEmails(new String[] {identify});
+        } else {
+            params.setMobiles(new String[] {identify});
+        }
 
         Request<LarkGetUserIdRequest, JSONObject> request =
             Request.newRequest("contact/v3/users/batch_get_id", "POST", AccessTokenType.Tenant, params,

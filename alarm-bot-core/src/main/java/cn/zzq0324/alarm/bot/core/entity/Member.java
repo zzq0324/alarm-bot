@@ -32,9 +32,9 @@ public class Member {
     private String name;
 
     /**
-     * 手机号
+     * 标识，可以是手机号或者邮箱，由使用方统一规范
      */
-    private String mobile;
+    private String identity;
 
     /**
      * 三方平台的openId

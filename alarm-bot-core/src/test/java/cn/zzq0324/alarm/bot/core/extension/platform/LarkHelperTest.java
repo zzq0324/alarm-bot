@@ -23,7 +23,7 @@ public class LarkHelperTest {
 
     @Test
     public void testGetOpenIdByMobile() {
-        Assertions.assertNotNull(larkHelper.getOpenIdByMobile("x"));
+        Assertions.assertNotNull(larkHelper.getOpenIdByIdentify("x"));
     }
 
     @Test

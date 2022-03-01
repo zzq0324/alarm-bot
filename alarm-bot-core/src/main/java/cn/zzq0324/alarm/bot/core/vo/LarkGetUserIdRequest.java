@@ -14,4 +14,7 @@ public class LarkGetUserIdRequest {
 
     @SerializedName("mobiles")
     private String[] mobiles;
+
+    @SerializedName("emails")
+    private String[] emails;
 }

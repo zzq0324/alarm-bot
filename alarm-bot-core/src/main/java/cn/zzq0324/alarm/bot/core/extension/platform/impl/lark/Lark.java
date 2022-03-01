@@ -128,8 +128,8 @@ public class Lark implements PlatformExt {
     }
 
     @Override
-    public MemberThirdAuthInfo getMemberInfo(String mobile) {
-        String openId = larkHelper.getOpenIdByMobile(mobile);
+    public MemberThirdAuthInfo getMemberInfo(String identify) {
+        String openId = larkHelper.getOpenIdByIdentify(identify);
         if (StringUtils.isEmpty(openId)) {
             return null;
         }

@@ -30,15 +30,15 @@ public class MemberService {
     /**
      * 添加成员
      */
-    public void addMember(String mobile) {
-        Member member = getByMobile(mobile);
+    public void addMember(String identity) {
+        Member member = getByIdentity(identity);
         // 根据手机号查找是否存在，存在并且有授权信息，则直接返回
         if (member != null) {
             return;
         }
 
         member = new Member();
-        member.setMobile(mobile);
+        member.setIdentity(identity);
         member.setCreateTime(new Date());
         member.setStatus(Member.STATUS_NORMAL);
 
@@ -47,15 +47,15 @@ public class MemberService {
         memberDao.insert(member);
     }
 
-    public Page<Member> listPage(int currentPage, int size, String name, String mobile, int status) {
+    public Page<Member> listPage(int currentPage, int size, String name, String identity, int status) {
         Page page = new Page(currentPage, size);
         QueryWrapper queryWrapper = new QueryWrapper();
         if (StringUtils.hasLength(name)) {
             queryWrapper.like("name", name);
         }
 
-        if (StringUtils.hasLength(mobile)) {
-            queryWrapper.eq("mobile", mobile);
+        if (StringUtils.hasLength(identity)) {
+            queryWrapper.eq("identity", identity);
         }
 
         if (status >= 0) {
@@ -71,10 +71,10 @@ public class MemberService {
     public void setMemberThirdAuthInfo(Member member) {
         // 为空重新从第三方调用获取信息，兼容你换IM的情况
         MemberThirdAuthInfo memberThirdAuthInfo =
-            ExtensionLoader.getDefaultExtension(PlatformExt.class).getMemberInfo(member.getMobile());
+            ExtensionLoader.getDefaultExtension(PlatformExt.class).getMemberInfo(member.getIdentity());
 
         if (memberThirdAuthInfo == null) {
-            log.warn("can't find third platform account by mobile: {}", member.getMobile());
+            log.warn("can't find third platform account by identity: {}", member.getIdentity());
 
             return;
         }
@@ -84,9 +84,9 @@ public class MemberService {
         member.setUnionId(memberThirdAuthInfo.getUnionId());
     }
 
-    public Member getByMobile(String mobile) {
+    public Member getByIdentity(String identity) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("mobile", mobile);
+        queryWrapper.eq("identity", identity);
 
         return memberDao.selectOne(queryWrapper);
     }

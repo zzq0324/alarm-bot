@@ -30,18 +30,18 @@ public class MemberController {
     @RequestMapping("/list")
     public Page list(MemberRequest request) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page page =
-            memberService.listPage(request.getPage(), request.getRows(), request.getName(), request.getMobile(),
+            memberService.listPage(request.getPage(), request.getRows(), request.getName(), request.getIdentity(),
                 request.getStatus());
 
         return new Page(page);
     }
 
-    @RequestMapping("/getMemberByMobile")
-    public Member getMemberByMobile(String mobile) {
-        Member member = memberService.getByMobile(mobile);
+    @RequestMapping("/getMemberByIdentify")
+    public Member getMemberByIdentify(String identity) {
+        Member member = memberService.getByIdentity(identity);
         if (member == null) {
             member = new Member();
-            member.setMobile(mobile);
+            member.setIdentity(identity);
 
             memberService.setMemberThirdAuthInfo(member);
         }
@@ -50,13 +50,13 @@ public class MemberController {
     }
 
     @RequestMapping("/add")
-    public void addMember(String mobile) {
-        Member member = memberService.getByMobile(mobile);
+    public void addMember(String identify) {
+        Member member = memberService.getByIdentity(identify);
         if (member != null) {
             return;
         }
 
-        memberService.addMember(mobile);
+        memberService.addMember(identify);
     }
 
     @RequestMapping("/updateStatus")

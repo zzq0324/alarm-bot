@@ -19,9 +19,9 @@ public class MemberRequest extends PageRequest {
     private String name;
 
     /**
-     * 手机号
+     * 身份标识
      */
-    private String mobile;
+    private String identity;
 
     /**
      * 状态-1，默认全部

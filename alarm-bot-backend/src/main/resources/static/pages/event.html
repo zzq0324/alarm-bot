@@ -27,7 +27,7 @@
                     <th data-options="field:'eventStatus',width:20,formatter:eventStatusFormat">状态</th>
                     <th data-options="field:'createTime',width:70,formatter:formatLongToDate">创建时间</th>
                     <th data-options="field:'summary',width:120">事件小结</th>
-                    <th data-options="field:'action',width:60,formatter:showOperateBtn">操作</th>
+                    <th data-options="field:'action',width:40,formatter:showOperateBtn">操作</th>
                 </tr>
             </thead>
         </table>
@@ -55,26 +55,7 @@
     }
 
     function showOperateBtn(value, row) {
-        var html = '';
-        var chatGroupId = row.chatGroupId;
-        // 由于暂时打不开群聊，这边覆盖
-        if (row.eventStatus != 'FINISH') {
-            var linkUrl = null;
-            // 飞书
-            if (chatGroupId.indexOf('oc_') > -1) {
-                linkUrl = 'https://applink.feishu.cn/client/chat/open?openId=' + chatGroupId;
-            }
-
-            html += '<a target="_blank" href="' + linkUrl + '" class="easyui-linkbutton" data-options="iconCls:\'icon-add\'">加入群聊</a>';
-        }
-
-        if (html) {
-            html += "&nbsp;&nbsp;";
-        }
-
-        html = '<a href="#" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'" onclick="openChatGroupMsg(\'' + chatGroupId + '\')">群聊消息</a>';
-
-        return html;
+        return '<a href="#" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'" onclick="openChatGroupMsg(\'' + chatGroupId + '\')">群聊消息</a>';
     }
 
     function openChatGroupMsg(chatGroupId) {
