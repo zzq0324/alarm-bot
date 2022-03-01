@@ -1,10 +1,11 @@
 - 入门
 
   - [演示](demo.md)
-  - [项目结构](project-structure.md)
+  - [项目概况](project-structure.md)
 
 - 部署
 
+  - [配置说明](config-desc.md)
   - [项目部署](deploy-config.md)
   - [飞书配置](deploy-lark.md)
 
