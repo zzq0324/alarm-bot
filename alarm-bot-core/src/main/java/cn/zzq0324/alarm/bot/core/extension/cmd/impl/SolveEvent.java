@@ -2,6 +2,7 @@ package cn.zzq0324.alarm.bot.core.extension.cmd.impl;
 
 import cn.zzq0324.alarm.bot.core.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.core.constant.CommandConstants;
+import cn.zzq0324.alarm.bot.core.constant.Status;
 import cn.zzq0324.alarm.bot.core.constant.TaskType;
 import cn.zzq0324.alarm.bot.core.entity.Event;
 import cn.zzq0324.alarm.bot.core.entity.Message;
@@ -44,9 +45,13 @@ public class SolveEvent implements Command<SolveEventContext> {
     @Override
     public CommandContext matchCommand(IMMessage imMessage) {
         Message message = imMessage.getMessageList().get(0);
-        // 解决事件
-        if (message.getContent().contains(CommandConstants.SOLVE_EVENT)) {
+        // 解决事件，必须@机器人
+        if (message.getContent().contains(CommandConstants.SOLVE_EVENT) && imMessage.isAtRobot()) {
             Event event = eventService.getByChatGroupId(message.getChatGroupId());
+            // 找不到事件或者已经标记解决，不重复处理
+            if (event == null || event.getEventStatus() == Status.FINISH) {
+                return null;
+            }
 
             return SolveEventContext.builder().command(CommandConstants.SOLVE_EVENT).message(message).build();
         }
@@ -106,7 +111,7 @@ public class SolveEvent implements Command<SolveEventContext> {
     private void replyAlarmGroupSolved(Event event, String summary) {
         String replyMessage = String.format(alarmBotProperties.getReplySolvedToChatGroup(),
             DateUtils.getDiffText(event.getCreateTime(), event.getFinishTime()), summary);
-        
+
         ExtensionLoader.getDefaultExtension(PlatformExt.class).replyText(event.getThirdMessageId(), replyMessage);
     }
 
