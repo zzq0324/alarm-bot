@@ -44,7 +44,7 @@ alarm-bot:
   bot-name: 'AlarmBot'
   create-alarm-demo: '@AlarmBot [PINPOINT Alarm - service-test] HEAP USAGE  is 92%.'
   # serviceId对应的正则表达式，只允许有一对括号
-  project-name-reg-exp: 'PINPOINT Alarm - (\w+-\w+)'
+  project-name-reg-exp: 'PINPOINT Alarm - ([a-z0-9_-]+)'
   reply-alarm: '告警信息已收到，已另外创建群聊沟通，解决后会同步进度到本群'
   reply-event-solved: '感谢大家的参与，本群预计%d分钟后解散，如有重要信息请及时下载备份！'
   not-in-alarm-group: '当前群不支持 /solve 指令'
