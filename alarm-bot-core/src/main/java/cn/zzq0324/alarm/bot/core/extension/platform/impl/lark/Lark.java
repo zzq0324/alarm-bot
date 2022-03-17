@@ -130,7 +130,8 @@ public class Lark implements PlatformExt {
 
     @Override
     public void memberLeaveNotify(Map<Member, Set<Project>> memberProjectMap) {
-        StringBuilder messageBuilder = new StringBuilder(alarmBotProperties.getMemberLeaverNotifyText());
+        StringBuilder messageBuilder = new StringBuilder("<at user_id=\"all\">所有人</at> ");
+        messageBuilder.append(alarmBotProperties.getMemberLeaverNotifyText());
         for (Member member : memberProjectMap.keySet()) {
             Set<Project> projectSet = memberProjectMap.get(member);
             List<String> projectNameList =
