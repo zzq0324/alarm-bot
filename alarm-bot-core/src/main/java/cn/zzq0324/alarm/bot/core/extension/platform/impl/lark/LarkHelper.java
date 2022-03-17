@@ -41,6 +41,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -186,6 +187,15 @@ public class LarkHelper {
         BOT_INFO = executeCaller(caller).getBot();
 
         return BOT_INFO;
+    }
+
+    public void sendWebHookMsg(String webHookUrl, String title, String message) {
+        Map<String, String> params = new HashMap<>();
+        params.put("msg_type", "text");
+        params.put("content", buildTextContent(title, message));
+
+        Request request = Request.newRequest(webHookUrl, "POST", AccessTokenType.Tenant, params, new JSONObject());
+        invoke(request, false);
     }
 
     public List<ListChat> getRobotChatGroups() {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * description: MemberService <br>
@@ -63,6 +64,13 @@ public class MemberService {
         }
 
         return memberDao.selectPage(page, queryWrapper);
+    }
+
+    public List<Member> getNormalMemberList() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", Member.STATUS_NORMAL);
+
+        return memberDao.selectList(queryWrapper);
     }
 
     /**

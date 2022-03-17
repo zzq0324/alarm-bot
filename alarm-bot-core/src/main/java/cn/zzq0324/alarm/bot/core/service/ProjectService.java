@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * description: ProjectService <br>
  * date: 2022/2/19 11:16 上午 <br>
@@ -53,6 +55,13 @@ public class ProjectService {
         }
 
         return projectDao.selectPage(page, queryWrapper);
+    }
+
+    public List<Project> getNormalProjectList() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", Project.STATUS_NORMAL);
+
+        return projectDao.selectList(queryWrapper);
     }
 
     public Project getById(long id) {

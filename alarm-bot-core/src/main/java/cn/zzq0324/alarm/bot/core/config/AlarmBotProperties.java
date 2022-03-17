@@ -86,4 +86,14 @@ public class AlarmBotProperties {
     private String pendingEventNotifyCron;
 
     private String alarmGroupReplyPendingTask;
+
+    /**
+     * hook地址，用于消息推送，例如人员离职的提醒信息
+     */
+    private String webhookUrl;
+
+    /**
+     * 人员离职告警文本
+     */
+    private String memberLeaverNotifyText;
 }

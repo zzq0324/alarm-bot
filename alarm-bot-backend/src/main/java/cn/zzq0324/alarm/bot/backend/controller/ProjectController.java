@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * description: ProjectController <br>
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/project")
 public class ProjectController {
 
-    private static final Map<Long, String> MEMBER_NAME_CACHE = new ConcurrentHashMap<>();
+    private static final Map<Long, Member> MEMBER_CACHE = new ConcurrentHashMap<>();
 
     @Autowired
     private ProjectService projectService;
@@ -51,6 +52,7 @@ public class ProjectController {
             JSONObject item = (JSONObject)JSONObject.toJSON(data);
             String memberIds = item.getString("memberIds");
             item.put("memberNames", getMemberName(memberIds));
+            item.put("memberIdentityList", getMemberIdentity(memberIds));
 
             list.add(item);
         });
@@ -58,24 +60,33 @@ public class ProjectController {
         return new Page(page.getTotal(), list);
     }
 
-    private String getMemberName(String memberIds) {
-        StringBuilder memberNameBuilder = new StringBuilder();
-        if (StringUtils.hasLength(memberIds)) {
-            String[] memberIdArr = StringUtils.commaDelimitedListToStringArray(memberIds);
-            for (String memberId : memberIdArr) {
-                String memberName = MEMBER_NAME_CACHE.computeIfAbsent(Long.parseLong(memberId), id -> {
-                    Member member = memberService.get(Long.parseLong(memberId));
-                    return member.getName();
-                });
+    private String getMemberAttribute(String memberIds, Function<Member, String> function) {
+        StringBuilder attributeBuilder = new StringBuilder();
 
-                if (memberNameBuilder.length() > 0) {
-                    memberNameBuilder.append("，");
-                }
-                memberNameBuilder.append(memberName);
-            }
+        if (!StringUtils.hasLength(memberIds)) {
+            return attributeBuilder.toString();
         }
 
-        return memberNameBuilder.toString();
+        String[] memberIdArr = StringUtils.commaDelimitedListToStringArray(memberIds);
+        for (String memberId : memberIdArr) {
+            Member member = MEMBER_CACHE.computeIfAbsent(Long.parseLong(memberId),
+                id -> memberService.get(Long.parseLong(memberId)));
+
+            if (attributeBuilder.length() > 0) {
+                attributeBuilder.append(",");
+            }
+            attributeBuilder.append(function.apply(member));
+        }
+
+        return attributeBuilder.toString();
+    }
+
+    private String getMemberName(String memberIds) {
+        return getMemberAttribute(memberIds, member -> member.getName());
+    }
+
+    private String getMemberIdentity(String memberIds) {
+        return getMemberAttribute(memberIds, member -> member.getIdentity());
     }
 
     @RequestMapping("/add")

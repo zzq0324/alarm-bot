@@ -4,6 +4,7 @@ import cn.zzq0324.alarm.bot.core.config.AlarmBotProperties;
 import cn.zzq0324.alarm.bot.core.constant.LarkConstants;
 import cn.zzq0324.alarm.bot.core.constant.PlatformType;
 import cn.zzq0324.alarm.bot.core.entity.Event;
+import cn.zzq0324.alarm.bot.core.entity.Member;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.extension.platform.PlatformExt;
@@ -26,7 +27,10 @@ import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * description: Lark <br>
@@ -122,5 +126,22 @@ public class Lark implements PlatformExt {
         User user = larkHelper.getLarkUser(openId, "open_id");
 
         return new MemberThirdAuthInfo(user.getName(), user.getOpenId(), user.getUnionId());
+    }
+
+    @Override
+    public void memberLeaveNotify(Map<Member, Set<Project>> memberProjectMap) {
+        StringBuilder messageBuilder = new StringBuilder(alarmBotProperties.getMemberLeaverNotifyText());
+        for (Member member : memberProjectMap.keySet()) {
+            Set<Project> projectSet = memberProjectMap.get(member);
+            List<String> projectNameList =
+                projectSet.stream().map(project -> project.getName()).collect(Collectors.toList());
+
+            messageBuilder.append("\n");
+            messageBuilder.append("姓名：").append(member.getName()).append("，标识：").append(member.getIdentity())
+                .append("，相关项目：").append(StringUtils.collectionToDelimitedString(projectNameList, ","));
+        }
+
+        // 发送通知
+        larkHelper.sendWebHookMsg(alarmBotProperties.getWebhookUrl(), null, messageBuilder.toString());
     }
 }

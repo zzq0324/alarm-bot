@@ -53,4 +53,10 @@ public class LarkHelperTest {
     public void testGetBotInfo() {
         Assertions.assertNotNull(larkHelper.getBotInfo());
     }
+
+    @Test
+    public void testSendWebHookMsg() {
+        larkHelper.sendWebHookMsg("https://open.feishu.cn/open-apis/bot/v2/hook/78cda34b-e647-4c96-be4f-5637a60ca791",
+            "测试消息", "<at user_id=\"all\">所有人</at> 以下人员离职，请注意跟进：\n姓名：xxx，身份标识：xxx，影响项目：xxx\n姓名：xxx，身份标识：xxx，影响项目：xxx");
+    }
 }

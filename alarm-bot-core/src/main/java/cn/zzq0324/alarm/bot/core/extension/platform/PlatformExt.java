@@ -1,6 +1,7 @@
 package cn.zzq0324.alarm.bot.core.extension.platform;
 
 import cn.zzq0324.alarm.bot.core.entity.Event;
+import cn.zzq0324.alarm.bot.core.entity.Member;
 import cn.zzq0324.alarm.bot.core.entity.Message;
 import cn.zzq0324.alarm.bot.core.entity.Project;
 import cn.zzq0324.alarm.bot.core.spi.SPI;
@@ -9,6 +10,8 @@ import cn.zzq0324.alarm.bot.core.vo.IMMessage;
 import cn.zzq0324.alarm.bot.core.vo.MemberThirdAuthInfo;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * description: 告警推送的平台，例如飞书、钉钉、企业微信等 <br>
@@ -67,5 +70,10 @@ public interface PlatformExt {
     /**
      * 根据手机号查询成员三方信息
      */
-    MemberThirdAuthInfo getMemberInfo(String mobile);
+    MemberThirdAuthInfo getMemberInfo(String identity);
+
+    /**
+     * 成员离职通知
+     */
+    void memberLeaveNotify(Map<Member, Set<Project>> memberProjectMap);
 }
