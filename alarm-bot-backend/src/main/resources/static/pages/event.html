@@ -2,10 +2,10 @@
     <!-- begin search bar -->
     <div data-options="region:'north'" style="height:80px;padding: 10px;" class="easyui-panel" title="搜索条件">
         <label>事件状态：</label><select class="easyui-combobox" id="searchEventStatus" style="width:120px;">
-            <option value="-1">全部</option>
-            <option value="1">处理中</option>
-            <option value="3">已完成</option>
-        </select>
+        <option value="-1">全部</option>
+        <option value="1">处理中</option>
+        <option value="3">已完成</option>
+    </select>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <label>开始时间：</label><input class="easyui-datebox" id="searchEventStartDate" style="width:120px" required>
         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -18,18 +18,18 @@
     <!-- begin data grid -->
     <div data-options="region:'center',title:'事件列表'">
         <table id="eventDataGrid" class="easyui-datagrid" style="width:100%;height:100%"
-            data-options="rownumbers:true,pagination:true,method:'get',fit:true,fitColumns:true">
+               data-options="rownumbers:true,pagination:true,method:'get',fit:true,fitColumns:true">
             <thead>
-                <tr>
-                    <th data-options="field:'id',width:30">ID</th>
-                    <th data-options="field:'projectName',width:60">关联项目</th>
-                    <th data-options="field:'detail',width:160,formatter:eventDetailFormat">事件信息</th>
-                    <th data-options="field:'eventStatus',width:20,formatter:eventStatusFormat">状态</th>
-                    <th data-options="field:'createTime',width:70">创建时间</th>
-                    <th data-options="field:'summary',width:120">事件小结</th>
-                    <th data-options="field:'duration',width:70">创建时间</th>
-                    <th data-options="field:'action',width:40,formatter:showOperateBtn">操作</th>
-                </tr>
+            <tr>
+                <th data-options="field:'id',width:30">ID</th>
+                <th data-options="field:'projectName',width:60">关联项目</th>
+                <th data-options="field:'detail',width:160,formatter:eventDetailFormat">事件信息</th>
+                <th data-options="field:'eventStatus',width:20,formatter:eventStatusFormat">状态</th>
+                <th data-options="field:'createTime',width:70">创建时间</th>
+                <th data-options="field:'summary',width:120">事件小结</th>
+                <th data-options="field:'duration',width:70">处理时长</th>
+                <th data-options="field:'action',width:40,formatter:showOperateBtn">操作</th>
+            </tr>
             </thead>
         </table>
     </div>
@@ -94,4 +94,5 @@
             queryParams: getQueryParams()
         });
     });
+
 </script>
