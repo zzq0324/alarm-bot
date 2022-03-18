@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,57 +65,63 @@ public class MemberSyncTask {
         List<Project> projectList = projectService.getNormalProjectList();
 
         // key为memberId，value为对应负责的项目集合
-        Map<Long, Set<Project>> leaveMemberIdProjectMap = new HashMap<>();
+        Map<Long, Set<Project>> leaveOwnerIdProjectMap = new HashMap<>();
         for (Project project : projectList) {
             // 已下线，不处理
             if (project.getStatus() == Project.STATUS_OFFLINE) {
                 continue;
             }
 
-            // 判断项目owner是否有离职
-            checkMemberLeave(normalMemberMap, leaveMemberIdProjectMap, project, project.getOwnerId());
-
-            // 判断项目member是否有离职
-            if (StringUtils.hasLength(project.getMemberIds())) {
-                Set<String> memberIdSet = StringUtils.commaDelimitedListToSet(project.getMemberIds());
-                for (String memberIdStr : memberIdSet) {
-                    checkMemberLeave(normalMemberMap, leaveMemberIdProjectMap, project, Long.parseLong(memberIdStr));
-                }
+            // 判断项目owner是否有离职，离职添加到离职Owner列表
+            if (project.getOwnerId() != null && isLeave(normalMemberMap, project.getOwnerId())) {
+                leaveOwnerIdProjectMap.putIfAbsent(project.getOwnerId(), new HashSet<>());
+                leaveOwnerIdProjectMap.get(project.getOwnerId()).add(project);
             }
+
+            deleteLeaveMember(normalMemberMap, project);
         }
 
-        if (CollectionUtils.isEmpty(leaveMemberIdProjectMap)) {
+        if (CollectionUtils.isEmpty(leaveOwnerIdProjectMap)) {
             return;
         }
 
         // 如果有人员离职，推送消息
         Map<Member, Set<Project>> leaveMemberProjectMap = new HashMap<>();
-        for (Long memberId : leaveMemberIdProjectMap.keySet()) {
+        for (Long memberId : leaveOwnerIdProjectMap.keySet()) {
             Member member = memberService.get(memberId);
-            leaveMemberProjectMap.put(member, leaveMemberIdProjectMap.get(memberId));
+            leaveMemberProjectMap.put(member, leaveOwnerIdProjectMap.get(memberId));
         }
 
         ExtensionLoader.getDefaultExtension(PlatformExt.class).memberLeaveNotify(leaveMemberProjectMap);
     }
 
     /**
-     * 校验离职成员
+     * Member直接移除
      */
-    private void checkMemberLeave(Map<Long, Member> normalMemberMap, Map<Long, Set<Project>> leaveMemberIdProjectMap,
-        Project project, Long memberId) {
-        // 兼容owner为空的数据
-        if (memberId == null) {
+    private void deleteLeaveMember(Map<Long, Member> normalMemberMap, Project project) {
+        if (!StringUtils.hasLength(project.getMemberIds())) {
             return;
         }
 
-        // 在职不判断
-        if (normalMemberMap.containsKey(memberId)) {
-            return;
+        Set<String> memberIdSet = StringUtils.commaDelimitedListToSet(project.getMemberIds());
+        boolean hasLeave = false;
+        for (Iterator<String> it = memberIdSet.iterator(); it.hasNext(); ) {
+            String memberIdStr = it.next();
+            Long memberId = Long.parseLong(memberIdStr);
+            if (isLeave(normalMemberMap, memberId)) {
+                hasLeave = true;
+                it.remove();
+            }
         }
 
-        // 不在职添加到离职列表，并添加负责的新项目到集合
-        leaveMemberIdProjectMap.putIfAbsent(memberId, new HashSet<>());
-        leaveMemberIdProjectMap.get(memberId).add(project);
+        if (hasLeave) {
+            project.setMemberIds(StringUtils.collectionToCommaDelimitedString(memberIdSet));
+            projectService.update(project);
+        }
+    }
+
+    private boolean isLeave(Map<Long, Member> normalMemberMap, Long memberId) {
+        return !normalMemberMap.containsKey(memberId);
     }
 
     /**
