@@ -27,7 +27,7 @@ mvn clean package
 
 * **创建数据库**
 
-数据库脚本详见[init.sql](init.sql)，部署前请先创建相关表。
+数据库脚本详见[init.sql](https://alarm-bot.zzq0324.cn/init.sql)，部署前请先创建相关表。
 
 * **解压缩**
 
