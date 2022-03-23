@@ -16,18 +16,18 @@ create TABLE `project` (
 create TABLE `member` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name` varchar(100) NOT NULL COMMENT '姓名',
-  `mobile` varchar(11) NOT NULL COMMENT '手机号',
+  `identity` varchar(100) NOT NULL COMMENT '手机号',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `open_id` varchar(100) NOT NULL DEFAULT '' COMMENT '三方openID',
   `union_id` varchar(100) NOT NULL DEFAULT '' COMMENT '三方UnionID',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '成员状态，0-禁用，1-启用',
   PRIMARY KEY (`id`),
-  KEY `idx_mobile` (`mobile`) USING BTREE,
+  KEY `idx_identity` (`identity`) USING BTREE,
   KEY `member_name_IDX` (`name`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 -- 事件表，记录告警的主要信息
-create TABLE if not exists `event` (
+create TABLE `event` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `project_id` bigint(20) NOT NULL COMMENT '项目ID',
   `third_message_id` varchar(64) NOT NULL COMMENT '第三方消息ID',
