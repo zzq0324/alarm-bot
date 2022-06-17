@@ -19,7 +19,7 @@
         <maven.test.skip>true</maven.test.skip>
         <larksuite-oapi.version>1.0.18-rc4</larksuite-oapi.version>
         <dingtalk.version>2.0.0</dingtalk.version>
-        <fastjson.version>1.2.79</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <mybatis-plus.version>3.3.2</mybatis-plus.version>
         <lombok.version>1.18.10</lombok.version>
         <mysql-connector.version>8.0.20</mysql-connector.version>
